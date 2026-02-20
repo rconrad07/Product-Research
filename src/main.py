@@ -62,31 +62,32 @@ def run_pipeline(
     """
     run_id = make_run_id()
     logger = get_logger("orchestrator", run_id)
-    logger.info("=" * 60)
-    logger.info("Run ID: %s", run_id)
+    logger.info("\n" + "#"*70 + "\n# [PR ANALYST] - STARTING END-TO-END RESEARCH PIPELINE\n" + "#"*70)
     logger.info("Hypothesis: %s", hypothesis)
     logger.info("Sources: %s", input_sources)
-    logger.info("=" * 60)
+    logger.info("-" * 70)
 
     # ------------------------------------------------------------------
     # Stage 1: Curate all input sources
     # ------------------------------------------------------------------
-    logger.info("[1/4] Curator — ingesting %d source(s)...", len(input_sources))
+    logger.info("\n>> [STAGE 1/4] CURATOR: Ingesting and sanitizing data...")
     curator = Curator(run_id=run_id)
     curated_results: list[dict] = []
     for source in input_sources:
-        logger.info("  Curating: %s", source)
+        logger.info("   [In-Progress] Curating: %s", source)
         curated = curator.curate(source)
         curated_results.append(curated)
 
     # Merge into a single context dict for downstream agents
     combined_curated = _merge_curated(curated_results)
-    logger.info("[1/4] Curation complete — %d sources processed.", len(curated_results))
+    logger.info("   [Complete] Curation finished for %d sources.", len(curated_results))
 
     # ------------------------------------------------------------------
-    # Stage 2: Research + Skeptic in PARALLEL (no shared context)
+    # Stage 2: Research + Skeptic in PARALLEL
     # ------------------------------------------------------------------
-    logger.info("[2/4] Launching Researcher and Skeptic in parallel...")
+    logger.info("\n>> [STAGE 2/4] PARALLEL RESEARCH: Launching Researcher & Skeptic...")
+    logger.info("   Launching Researcher (Pro-Hypothesis)...")
+    logger.info("   Launching Skeptic (Adversarial)...")
     researcher = Researcher(run_id=run_id, search_fn=search_fn)
     skeptic = Skeptic(run_id=run_id, search_fn=search_fn)
 
@@ -101,12 +102,12 @@ def run_pipeline(
         researcher_findings = future_research.result()
         skeptic_findings = future_skeptic.result()
 
-    logger.info("[2/4] Parallel research complete.")
+    logger.info("   [Complete] Both research agents have returned findings.")
 
     # ------------------------------------------------------------------
     # Stage 3: Analyst Synthesis
     # ------------------------------------------------------------------
-    logger.info("[3/4] Analyst synthesizing findings...")
+    logger.info("\n>> [STAGE 3/4] ANALYST: Synthesizing pros and cons...")
     analyst = Analyst(run_id=run_id)
     analyst_output = analyst.analyze(
         hypothesis=hypothesis,
@@ -115,12 +116,12 @@ def run_pipeline(
         skeptic_findings=skeptic_findings,
     )
     tier = analyst_output.get("recommendation_tier", "UNKNOWN")
-    logger.info("[3/4] Analyst complete — Recommendation Tier: %s", tier)
+    logger.info("   [Complete] Synthesis finished. Recommendation Tier: %s", tier)
 
     # ------------------------------------------------------------------
     # Stage 4: Report Builder
     # ------------------------------------------------------------------
-    logger.info("[4/4] Building HTML report...")
+    logger.info("\n>> [STAGE 4/4] REPORT BUILDER: Generating HTML analysis...")
     output_filename = _make_report_filename(hypothesis, run_id)
     builder = ReportBuilder(run_id=run_id)
     report_path = builder.build(
@@ -129,8 +130,9 @@ def run_pipeline(
         analyst_output=analyst_output,
         output_filename=output_filename,
     )
-    logger.info("[4/4] Report ready: %s", report_path)
-    logger.info("=" * 60)
+    logger.info("\n" + "="*70)
+    logger.info("REPORT READY: %s", report_path)
+    logger.info("="*70 + "\n")
 
     return report_path
 

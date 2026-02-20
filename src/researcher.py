@@ -124,7 +124,8 @@ class Researcher:
             curated_data=json.dumps(curated_data, indent=2)[:2000],
         ) + (
             f"\n\nSEARCH RESULTS (cite these by URL in your output):\n{search_context[:4000]}"
-            "\n\nIMPORTANT: Every claim you make MUST reference a URL from the above results. "
+            "\n\nCRITICAL: Every claim you make MUST reference a specific deep-link URL from the results above. "
+            "DO NOT use generic homepages (e.g., https://expedia.com) if a specific article URL is available. "
             "DO NOT fabricate statistics or quotes. If no source supports a claim, say so."
         )
 

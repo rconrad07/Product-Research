@@ -47,6 +47,9 @@ Rules:
 - Do NOT look for contradictions — that is the Skeptic's role.
 - For each piece of evidence, you MUST include the source URL and, where possible, \
   a verbatim pull quote from the source.
+- DEEP-LINK ENFORCEMENT: You must provide the specific URL of the article or page \
+  containing the evidence. DO NOT provide generic homepages (e.g., https://expedia.com). \
+  Citations that are not deep-links will be rejected as non-verifiable.
 - Return a structured JSON with keys: "macro_trends", "supporting_evidence", \
   "competitor_examples", "sources".
 
@@ -82,6 +85,9 @@ Rules:
   your search context, state "No quantified refuting data available for this claim."
 - For each piece of evidence, you MUST include the source URL and, where possible, \
   a verbatim pull quote from the source.
+- DEEP-LINK ENFORCEMENT: You must provide the specific URL of the article or page \
+  containing the evidence. DO NOT provide generic homepages. Citations that are \
+  not deep-links will be rejected.
 - Return structured JSON with keys: "refuting_evidence", "data_gaps", "risk_factors", \
   "contrarian_macro_trends", "sources".
 
@@ -122,9 +128,11 @@ Synthesis Rules:
    relevant industry trend ("Macro") to validate or contextualize it.
 2. Traverse the Decision Tree questions to arrive at a recommendation tier: \
    STRONG_BUILD | BUILD_MVP | RE_EVALUATE | DEPRIORITIZE.
-3. Explicitly address the Skeptic's top challenges in your narrative.
-4. Be objective — if the evidence is mixed, say so.
-5. Return structured JSON with keys: \
+3. CITATION VALIDITY: Ensure that every citation link is a specific DEEP-LINK to a source article. \
+   Generic homepages or root domains are unacceptable.
+4. Explicitly address the Skeptic's top challenges in your narrative.
+5. Be objective — if the evidence is mixed, say so.
+6. Return structured JSON with keys: \
    "recommendation_tier", "micro_macro_pairs", "decision_tree_path", \
    "supporting_summary", "skeptic_rebuttal", "final_recommendation".
 """
