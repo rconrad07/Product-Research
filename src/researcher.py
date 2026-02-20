@@ -14,9 +14,9 @@ from src.config.settings import (
     AGENT_TEMPERATURES,
     MAX_SEARCH_QUERIES,
     MAX_SEARCH_RESULTS,
-    RETRY_BACKOFF_SECONDS,
 )
-from src.utils import LLMClient, extract_json
+import requests
+from src.utils import LLMClient, extract_json, get_logger
 
 
 class Researcher:
@@ -103,12 +103,34 @@ class Researcher:
         for q in queries:
             results = self._search(q)
             self.llm.logger.debug("Query '%s' → %d results", q, len(results))
-            for r in results[:MAX_SEARCH_RESULTS]:
-                title = r.get("title", "")
+            for r in results[:MAX_SEARCH_RESULTS * 2]:  # Fetch extra for filtering
                 url = r.get("url", "")
+                if not url:
+                    continue
+                
+                # GroundCite Check: Is it a valid deep-link?
+                is_valid = False
+                try:
+                    # Reject homepages
+                    if re.match(r'https?://[^/]+/?$', url):
+                        continue
+                        
+                    resp = requests.head(url, timeout=5, allow_redirects=True)
+                    if 200 <= resp.status_code < 400:
+                        is_valid = True
+                except Exception:
+                    pass
+                
+                if not is_valid:
+                    continue
+
+                title = r.get("title", "")
                 snippet = r.get("snippet", "")
                 blocks.append(f"SOURCE: {title}\nURL: {url}\nSNIPPET: {snippet}")
                 raw_results.append({"title": title, "url": url, "snippet": snippet})
+                
+                if len(raw_results) >= MAX_SEARCH_RESULTS:
+                    break
             time.sleep(0.5)  # Polite rate limiting
         return "\n\n".join(blocks), raw_results
 

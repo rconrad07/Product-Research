@@ -15,6 +15,8 @@ from src.config.settings import (
     MAX_SEARCH_QUERIES,
     MAX_SEARCH_RESULTS,
 )
+import re
+import requests
 from src.utils import LLMClient, extract_json
 
 
@@ -89,12 +91,32 @@ class Skeptic:
         for q in queries:
             results = self._search(q)
             self.llm.logger.debug("Adversarial query '%s' → %d results", q, len(results))
-            for r in results[:MAX_SEARCH_RESULTS]:
-                title = r.get("title", "")
+            for r in results[:MAX_SEARCH_RESULTS * 2]:
                 url = r.get("url", "")
+                if not url:
+                    continue
+                
+                # GroundCite Check
+                is_valid = False
+                try:
+                    if re.match(r'https?://[^/]+/?$', url):
+                        continue
+                    resp = requests.head(url, timeout=5, allow_redirects=True)
+                    if 200 <= resp.status_code < 400:
+                        is_valid = True
+                except Exception:
+                    pass
+                
+                if not is_valid:
+                    continue
+
+                title = r.get("title", "")
                 snippet = r.get("snippet", "")
                 blocks.append(f"SOURCE: {title}\nURL: {url}\nSNIPPET: {snippet}")
                 raw_results.append({"title": title, "url": url, "snippet": snippet})
+                
+                if len(raw_results) >= MAX_SEARCH_RESULTS:
+                    break
             time.sleep(0.5)
         return "\n\n".join(blocks), raw_results
 
