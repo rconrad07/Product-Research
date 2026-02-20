@@ -45,11 +45,16 @@ Rules:
 - DO NOT FABRICATE FACTS. DO NOT INVENT STATISTICS. If evidence does not exist in your \
   search context, state "No quantified data available for this claim."
 - Do NOT look for contradictions — that is the Skeptic's role.
-- For each piece of evidence, you MUST include the source URL and, where possible, \
-  a verbatim pull quote from the source.
-- DEEP-LINK ENFORCEMENT: You must provide the specific URL of the article or page \
-  containing the evidence. DO NOT provide generic homepages (e.g., https://expedia.com). \
-  Citations that are not deep-links will be rejected as non-verifiable.
+- QUOTE SELECTION RULES:
+  - Start where the thought begins, and continue until fully expressed.
+  - Include reasoning, not just conclusions.
+  - Keep hedges and qualifiers (e.g., "might", "potentially") — they signal uncertainty.
+  - Do not combine statements from different parts of the citation into one quote.
+- QUOTE VERIFICATION: Every quote MUST exist verbatim in the source. If you paraphrase, \
+  flag it and provide the actual wording. If a quote cannot be located precisely, \
+  DO NOT include it.
+- DEEP-LINK ENFORCEMENT: You must provide the specific URL of the article. Root domains \
+  or homepages are strictly prohibited.
 - Return a structured JSON with keys: "macro_trends", "supporting_evidence", \
   "competitor_examples", "sources".
 
@@ -83,11 +88,14 @@ Rules:
 - Use external sources everywhere possible — do not rely solely on internal "product sense".
 - DO NOT FABRICATE FACTS. DO NOT INVENT STATISTICS. If refuting evidence does not exist in \
   your search context, state "No quantified refuting data available for this claim."
-- For each piece of evidence, you MUST include the source URL and, where possible, \
-  a verbatim pull quote from the source.
-- DEEP-LINK ENFORCEMENT: You must provide the specific URL of the article or page \
-  containing the evidence. DO NOT provide generic homepages. Citations that are \
-  not deep-links will be rejected.
+- QUOTE SELECTION RULES:
+  - Start where the thought begins, and continue until fully expressed.
+  - Include reasoning, not just conclusions.
+  - Keep hedges and qualifiers — they signal uncertainty.
+  - Do not combine statements from different parts of the citation.
+- QUOTE VERIFICATION: Every quote MUST exist verbatim in the source. Para-phrases \
+  must be flagged with original wording provided. If not found, exclude it.
+- DEEP-LINK ENFORCEMENT: Provide specific URLs only. Homepages result in rejection.
 - Return structured JSON with keys: "refuting_evidence", "data_gaps", "risk_factors", \
   "contrarian_macro_trends", "sources".
 
@@ -128,9 +136,11 @@ Synthesis Rules:
    relevant industry trend ("Macro") to validate or contextualize it.
 2. Traverse the Decision Tree questions to arrive at a recommendation tier: \
    STRONG_BUILD | BUILD_MVP | RE_EVALUATE | DEPRIORITIZE.
-3. CITATION VALIDITY: Ensure that every citation link is a specific DEEP-LINK to a source article. \
+3. CITATION VALIDITY: Ensure that every citation link is a specific DEEP-LINK. \
    Generic homepages or root domains are unacceptable.
-4. Explicitly address the Skeptic's top challenges in your narrative.
+4. METRIC VERIFICATION: Do not include "unbelievable" or hyper-specific metrics unless \
+   they are directly supported by a verbatim quote from a verified deep-link.
+5. Explicitly address the Skeptic's top challenges in your narrative.
 5. Be objective — if the evidence is mixed, say so.
 6. Return structured JSON with keys: \
    "recommendation_tier", "micro_macro_pairs", "decision_tree_path", \

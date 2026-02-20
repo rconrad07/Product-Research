@@ -110,9 +110,13 @@ class Skeptic:
             curated_data=json.dumps(curated_data, indent=2)[:2000],
         ) + (
             f"\n\nSEARCH RESULTS (cite these by URL in your output):\n{search_context[:4000]}"
-            "\n\nCRITICAL: Every refuting claim MUST reference a specific deep-link URL from the results above. "
-            "DO NOT use generic homepages (e.g., https://booking.com) if a specific article URL is available. "
-            "DO NOT fabricate statistics or quotes. If no source refutes a claim, say so."
+            "\n\nCRITICAL: Every refuting claim MUST reference a specific deep-link URL (not a homepage). "
+            "\nQUOTE SELECTION RULES: "
+            "1. Start where the thought begins. "
+            "2. Include reasoning. "
+            "3. Keep hedges/qualifiers. "
+            "4. Do not combine disparate statements. "
+            "\nQUOTE VERIFICATION: Every quote must be verbatim. Exclude anything you cannot verify."
         )
 
         raw = self.llm.complete(

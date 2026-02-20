@@ -29,6 +29,7 @@ from src.skeptic import Skeptic
 from src.analyst import Analyst
 from src.report_builder import ReportBuilder
 from src.utils import get_logger, make_run_id
+from src.scripts.url_validator import URLValidator
 
 
 def _make_report_filename(hypothesis: str, run_id: str) -> str:
@@ -119,17 +120,18 @@ def run_pipeline(
     logger.info("   [Complete] Synthesis finished. Recommendation Tier: %s", tier)
 
     # ------------------------------------------------------------------
-    # Stage 4: Report Builder
+    # Stage 5: URL Validation & Auto-Fix
     # ------------------------------------------------------------------
-    logger.info("\n>> [STAGE 4/4] REPORT BUILDER: Generating HTML analysis...")
-    output_filename = _make_report_filename(hypothesis, run_id)
-    builder = ReportBuilder(run_id=run_id)
-    report_path = builder.build(
-        hypothesis=hypothesis,
-        curated_results=curated_results,
-        analyst_output=analyst_output,
-        output_filename=output_filename,
-    )
+    logger.info("\n>> [STAGE 5/5] VALIDATOR: Checking & fixing citation URLs...")
+    # Pass the search function to the validator for auto-fix attempts
+    validator = URLValidator(str(report_path))
+    # We monkey-patch the validator's search_web if we have a real search_fn
+    if search_fn:
+        import src.scripts.url_validator as uv
+        uv.search_web = search_fn
+    
+    validator.validate_and_fix()
+    
     logger.info("\n" + "="*70)
     logger.info("REPORT READY: %s", report_path)
     logger.info("="*70 + "\n")

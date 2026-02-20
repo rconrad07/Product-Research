@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Research Report — OTA Loyalty Program Hypothesis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --surface2: #22263a;
+            --border: #2e3350;
+            --text: #e2e8f0;
+            --muted: #8892a4;
+            --green: #22c55e;
+            --red: #ef4444;
+            --purple: #a78bfa;
+            --accent: #6366f1;
+            --sidebar-w: 260px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        nav#sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-w);
+            height: 100vh;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            overflow-y: auto;
+        }
+
+        nav#sidebar .brand {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 1.25rem;
+        }
+
+        nav#sidebar a {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        nav#sidebar a:hover {
+            background: var(--surface2);
+            color: var(--text);
+        }
+
+        main {
+            margin-left: var(--sidebar-w);
+            padding: 3rem 3.5rem;
+            max-width: 960px;
+            width: 100%;
+        }
+
+        .rec-banner {
+            background: #ecfdf5;
+            border: 2px solid #059669;
+            border-radius: 14px;
+            padding: 1.75rem 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .rec-banner .tier {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #059669;
+        }
+
+        .rec-banner .hyp {
+            font-size: 0.95rem;
+            color: #374151;
+            margin-top: 0.4rem;
+        }
+
+        .rec-banner .verdict {
+            margin-top: 0.75rem;
+            font-size: 1rem;
+            color: #111827;
+            line-height: 1.6;
+        }
+
+        section {
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+
+        p,
+        li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--muted);
+        }
+
+        ul {
+            padding-left: 1.25rem;
+        }
+
+        .card-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 10px;
+            padding: 1.25rem 1.5rem;
+            border-left: 4px solid var(--border);
+        }
+
+        .card.support {
+            border-left-color: var(--green);
+        }
+
+        .card.refute {
+            border-left-color: var(--red);
+        }
+
+        .card .label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.4rem;
+        }
+
+        .card.support .label {
+            color: var(--green);
+        }
+
+        .card.refute .label {
+            color: var(--red);
+        }
+
+        .card p {
+            margin-top: 0.25rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        th {
+            background: var(--surface2);
+            color: var(--text);
+            padding: 0.65rem 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 0.65rem 1rem;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            vertical-align: top;
+        }
+
+        td.micro {
+            color: var(--purple);
+            font-style: italic;
+        }
+
+        .tree-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .tree-step .num {
+            min-width: 2rem;
+            height: 2rem;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .tree-step .content {
+            flex: 1;
+        }
+
+        .tree-step .question {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .tree-step .answer {
+            display: inline-block;
+            margin-top: 0.25rem;
+            padding: 0.15rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: var(--surface2);
+            color: var(--green);
+        }
+
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1rem 0;
+            padding: 0.75rem 1.25rem;
+            background: var(--surface2);
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            color: var(--muted);
+        }
+
+        blockquote cite {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            font-style: normal;
+            color: var(--accent);
+        }
+
+        .sources-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .sources-col h3 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+            color: var(--text);
+            border-bottom: none;
+        }
+
+        .sources-col.support h3 {
+            color: var(--green);
+        }
+
+        .sources-col.refute h3 {
+            color: var(--red);
+        }
+
+        .source-link {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-bottom: 0.6rem;
+            font-size: 0.85rem;
+        }
+
+        .source-link .dot {
+            min-width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-top: 5px;
+        }
+
+        .source-link .dot.support {
+            background: var(--green);
+        }
+
+        .source-link .dot.refute {
+            background: var(--red);
+        }
+
+        .source-link a {
+            color: var(--muted);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .source-link a:hover {
+            color: var(--text);
+            text-decoration: underline;
+        }
+
+        .meta {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-bottom: 2rem;
+        }
+
+        .run-id {
+            font-family: monospace;
+            color: var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav id="sidebar">
+        <div class="brand">Product Research</div>
+        <a href="#recommendation">🎯 Recommendation</a>
+        <a href="#executive-summary">📋 Executive Summary</a>
+        <a href="#supporting">✅ Supporting Evidence</a>
+        <a href="#skeptic">🚫 Skeptic's Challenges</a>
+        <a href="#micro-macro">🔗 Micro → Macro</a>
+        <a href="#decision-tree">🌳 Decision Tree</a>
+        <a href="#final">📢 Final Analysis</a>
+        <a href="#sources">📎 Sources</a>
+    </nav>
+
+    <main>
+        <h1>Product Research Report</h1>
+        <div class="meta">
+            Generated on February 20, 2026 &nbsp;|&nbsp; Run ID: <span class="run-id">PRA-20260220-LOYALTY</span>
+        </div>
+
+        <section id="recommendation">
+            <div class="rec-banner">
+                <div class="tier">✅ Strong Build</div>
+                <div class="hyp"><strong>Hypothesis:</strong> OTAs see massive financial benefits from loyalty programs.
+                    Users will choose to book with rewards companies even if vacation costs are higher.</div>
+                <div class="verdict">Loyalty programs are not just a perk but a primary driver of Customer Lifetime
+                    Value (CLV). With retention being 5-25x cheaper than acquisition, and a 79% likelihood of increased
+                    spending to maximize benefits, the financial moat created by these programs is critical for OTA
+                    sustainability.</div>
+            </div>
+        </section>
+
+        <section id="executive-summary">
+            <h2>Executive Summary</h2>
+            <p>The travel industry is increasingly dominated by "walled garden" loyalty ecosystems. Market leaders like
+                Expedia and Booking.com report that loyalty members generate up to 2.5x more profit and engage in
+                significantly more repeat business. While travelers are price-sensitive, the <strong>perceived
+                    value</strong> of rewards—such as priority access, lounge entry, and exchange flexibility—often
+                outweighs direct price differences in the final booking decision.</p>
+        </section>
+
+        <section id="supporting">
+            <h2>✅ Supporting Evidence</h2>
+            <div class="card-grid">
+                <div class="card support">
+                    <div class="label">Profit Growth</div>
+                    <p>Expedia app users (loyalty-tier) generate 2.5 times more gross profit compared to non-members.
+                    </p>
+                </div>
+                <div class="card support">
+                    <div class="label">Retention Power</div>
+                    <p>66% of customers are more likely to continue doing business with a brand specifically because of
+                        its loyalty program.</p>
+                </div>
+                <div class="card support">
+                    <div class="label">Intent to Spend</div>
+                    <p>79% of customers actively increase their brand spending to reach higher loyalty status tiers.</p>
+                </div>
+            </div>
+            <blockquote class="support-quote">
+                "Increasing customer retention by just 5% can boost profits by 25% to 95%."
+                <cite><a href="https://www.the-outbox.com/customer-retention-hospitality/" target="_blank">— The Outbox:
+                        Customer Retention in Hospitality</a></cite>
+            </blockquote>
+            <p>The vacation exchange model (RCI/Wyndham) further proves this by providing a secondary utility for
+                points, ensuring that the "value" remains within the ecosystem even if a specific vacation property is
+                unavailable.</p>
+        </section>
+
+        <section id="skeptic">
+            <h2>🚫 Skeptic's Challenges</h2>
+            <div class="card-grid">
+                <div class="card refute">
+                    <div class="label">Program Dissatisfaction</div>
+                    <p>82% of travelers express frustration with traditional points systems, citing expiration and
+                        complexity.</p>
+                </div>
+                <div class="card refute">
+                    <div class="label">Price Sensitivity</div>
+                    <p>37% of consumers rank "price/value for money" as their top priority, often bypassing loyalty for
+                        a lower sticker price.</p>
+                </div>
+            </div>
+            <blockquote class="refute-quote">
+                "Only 24% view hotel rewards as the most valuable, placing them below grocery and credit card rewards."
+                <cite><a href="https://www.forbes.com/sites/geoffwhitmore/2024/02/15/are-travel-loyalty-programs-still-worth-it/"
+                        target="_blank">— Forbes: Are Travel Loyalty Programs Still Worth It?</a></cite>
+            </blockquote>
+            <p>The skeptic warns that "loyalty" can be fickle if the program is too rigid. Travelers are increasingly
+                prioritizing <strong>experiential personalization</strong> over generic point accumulation.</p>
+        </section>
+
+        <section id="micro-macro">
+            <h2>🔗 Micro → Macro Synthesis</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Micro (User Signal)</th>
+                        <th>Macro (Market Trend)</th>
+                        <th>Insight</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="micro">52% increase in retention via program adoption.</td>
+                        <td>Acquisition is 5-25x more expensive than retention.</td>
+                        <td>The program pays for itself by drastically lowering the ROAS required for growth.</td>
+                    </tr>
+                    <tr>
+                        <td class="micro">Point exchange models (RCI/Wyndham) retain large bases.</td>
+                        <td>RCI fulfills 140% more exchanges than competitors.</td>
+                        <td>Flexibility acts as a "stickiness" multiplier that competitors cannot easily replicate.</td>
+                    </tr>
+                    <tr>
+                        <td class="micro">Users book even if they pay more.</td>
+                        <td>32% of travelers will pay up to $50 more for high-value carriers.</td>
+                        <td>Loyalty shifts the decision from "lowest price" to "best total value."</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="decision-tree">
+            <h2>🌳 Decision Tree Path</h2>
+            <div class="tree-step">
+                <div class="num">1</div>
+                <div class="content">
+                    <div class="question">Is there significant user demand for this?</div><span class="answer">Yes, 80%
+                        depend on loyalty.</span>
+                </div>
+            </div>
+            <div class="tree-step">
+                <div class="num">2</div>
+                <div class="content">
+                    <div class="question">Do competitors already offer a superior version?</div><span
+                        class="answer">Yes, Booking/Expedia are highly advanced.</span>
+                </div>
+            </div>
+            <div class="tree-step">
+                <div class="num">3</div>
+                <div class="content">
+                    <div class="question">Can we offer a unique differentiator?</div><span class="answer">Yes, through
+                        Vacation Exchange/Timeshare agility.</span>
+                </div>
+            </div>
+            <p>The path confirms that a robust loyalty program is table-stakes for OTAs but requires unique flexibility
+                (like point exchange) to stand out.</p>
+        </section>
+
+        <section id="final">
+            <h2>📢 Final Analyst Recommendation</h2>
+            <p>The hypothesis is strongly supported. The financial benefits of loyalty—driven primarily by increased CLV
+                and secondary spend—make it a cornerstone of the OTA business model. To maximize success, the program
+                should move away from rigid "points per dollar" and toward **flexible exchange models** and
+                **personalized experiences**, which justify the price premium travelers are increasingly willing to pay.
+            </p>
+        </section>
+
+        <section id="sources">
+            <h2>📎 Sources &amp; References</h2>
+            <div class="sources-grid">
+                <div class="sources-col support">
+                    <h3>Supporting Sources (Deep-Links)</h3>
+                    <div class="source-link">
+                        <div class="dot support"></div><a
+                            href="https://www.arrivia.com/travel-loyalty-is-redefining-customer-value/">Arrivia: Travel
+                            Loyalty Redefining Value</a>
+                    </div>
+                    <div class="source-link">
+                        <div class="dot support"></div><a
+                            href="https://www.phocuswire.com/expedia-group-strategy-focus-on-high-value-customers/">Phocuswire:
+                            Expedia High-Value Strategy</a>
+                    </div>
+                    <div class="source-link">
+                        <div class="dot support"></div><a
+                            href="https://www.the-outbox.com/customer-retention-hospitality/">The Outbox: Retention
+                            Statistics</a>
+                    </div>
+                    <div class="source-link">
+                        <div class="dot support"></div><a
+                            href="https://www.oag.com/blog/traveler-survey-2024-loyalty-experiences">OAG: 2024 Traveler
+                            Survey</a>
+                    </div>
+                </div>
+                <div class="sources-col refute">
+                    <h3>Refuting/Risk Sources (Deep-Links)</h3>
+                    <div class="source-link">
+                        <div class="dot refute"></div><a
+                            href="https://www.forbes.com/sites/geoffwhitmore/2024/02/15/are-travel-loyalty-programs-still-worth-it/">Forbes:
+                            Skepticism on Points</a>
+                    </div>
+                    <div class="source-link">
+                        <div class="dot refute"></div><a
+                            href="https://www.retailcustomerexperience.com/articles/the-state-of-travel-loyalty-programs-in-2024/">RetailCX:
+                            Traveler Dissatisfaction</a>
+                    </div>
+                    <div class="source-link">
+                        <div class="dot refute"></div><a
+                            href="https://www.hospitalitynet.org/opinion/4118501.html">HospitalityNet: The Shift in
+                            Loyalty</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</body>
+
+</html>

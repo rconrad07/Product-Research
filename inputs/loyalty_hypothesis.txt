@@ -1,0 +1,5 @@
+Hypothesis: Online Travel Agencies (OTA) see big financial benefits from loyalty programs. The type of loyalty program dependents on the product and/or customer base. Regardless, user's will regularily choose to book with companies that offer rewards even if they have to pay more money to book their vacation.
+
+Existing insights: 
+1. Loyalty program adoption has increased customer retention by 52% (url: https://www.globalgrowthinsights.com/market-reports/online-travel-agency-ota-market-102197).
+2. RCI, Club Wyndham, and Worldmark Vacation companies have large customer bases that rely on their ability to exchange points/weeks for booking their vacations.
