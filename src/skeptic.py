@@ -46,9 +46,9 @@ class Skeptic:
 
         queries = self._generate_adversarial_queries(hypothesis, curated_data)
         self.llm.logger.info("Generated %d adversarial queries", len(queries))
-        search_context = self._run_searches(queries)
+        search_context, raw_results = self._run_searches(queries)
 
-        return self._synthesize(hypothesis, curated_data, search_context)
+        return self._synthesize(hypothesis, curated_data, search_context, raw_results)
 
     # ------------------------------------------------------------------
     # Query Generation
@@ -83,8 +83,9 @@ class Skeptic:
     # Search Execution
     # ------------------------------------------------------------------
 
-    def _run_searches(self, queries: list[str]) -> str:
+    def _run_searches(self, queries: list[str]) -> tuple[str, list[dict]]:
         blocks: list[str] = []
+        raw_results: list[dict] = []
         for q in queries:
             results = self._search(q)
             self.llm.logger.debug("Adversarial query '%s' → %d results", q, len(results))
@@ -92,21 +93,26 @@ class Skeptic:
                 title = r.get("title", "")
                 url = r.get("url", "")
                 snippet = r.get("snippet", "")
-                blocks.append(f"[{title}]({url})\n{snippet}")
+                blocks.append(f"SOURCE: {title}\nURL: {url}\nSNIPPET: {snippet}")
+                raw_results.append({"title": title, "url": url, "snippet": snippet})
             time.sleep(0.5)
-        return "\n\n".join(blocks)
+        return "\n\n".join(blocks), raw_results
 
     # ------------------------------------------------------------------
     # Synthesis
     # ------------------------------------------------------------------
 
     def _synthesize(
-        self, hypothesis: str, curated_data: dict, search_context: str
+        self, hypothesis: str, curated_data: dict, search_context: str, raw_results: list[dict]
     ) -> dict:
         user_msg = SKEPTIC_USER.format(
             hypothesis=hypothesis,
             curated_data=json.dumps(curated_data, indent=2)[:2000],
-        ) + f"\n\nSEARCH RESULTS:\n{search_context[:4000]}"
+        ) + (
+            f"\n\nSEARCH RESULTS (cite these by URL in your output):\n{search_context[:4000]}"
+            "\n\nIMPORTANT: Every refuting claim MUST reference a URL from the above results. "
+            "DO NOT fabricate statistics or quotes. If no source refutes a claim, say so."
+        )
 
         raw = self.llm.complete(
             system=SKEPTIC_SYSTEM,
@@ -114,7 +120,11 @@ class Skeptic:
             model=AGENT_MODELS["skeptic"],
             temperature=AGENT_TEMPERATURES["skeptic"],
         )
-        return extract_json(raw)
+        result = extract_json(raw)
+        # Ensure raw search sources are always preserved in output
+        if "sources" not in result or not result["sources"]:
+            result["sources"] = raw_results
+        return result
 
     # ------------------------------------------------------------------
     # Default search stub

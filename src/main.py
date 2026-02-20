@@ -18,7 +18,9 @@ Usage:
 """
 import argparse
 import concurrent.futures
+import re
 import sys
+from datetime import datetime
 from pathlib import Path
 
 from src.curator import Curator
@@ -29,10 +31,21 @@ from src.report_builder import ReportBuilder
 from src.utils import get_logger, make_run_id
 
 
+def _make_report_filename(hypothesis: str, run_id: str) -> str:
+    """
+    Generate a unique, human-readable filename.
+    Format: YYYY-MM-DD_<hypothesis-slug>_<run-id-short>.html
+    Example: 2026-02-19_room-selection-list-vs-grid_PRA-20260219.html
+    """
+    date_str = datetime.utcnow().strftime("%Y-%m-%d")
+    slug = re.sub(r"[^a-z0-9]+", "-", hypothesis.lower())[:50].strip("-")
+    short_id = run_id.split("-")[0] if "-" in run_id else run_id[:12]
+    return f"{date_str}_{slug}_{short_id}.html"
+
+
 def run_pipeline(
     hypothesis: str,
     input_sources: list[str],
-    output_filename: str = "report.html",
     search_fn=None,
 ) -> Path:
     """
@@ -41,12 +54,11 @@ def run_pipeline(
     Args:
         hypothesis:     The product idea or question to research.
         input_sources:  List of file paths or URLs to ingest.
-        output_filename: Filename for the HTML report (saved to output/).
         search_fn:      Optional callable for web search. If None, a stub
                         is used — see researcher.py for the expected interface.
 
     Returns:
-        Path to the generated HTML report.
+        Path to the generated HTML report (auto-named from hypothesis + run_id).
     """
     run_id = make_run_id()
     logger = get_logger("orchestrator", run_id)
@@ -109,6 +121,7 @@ def run_pipeline(
     # Stage 4: Report Builder
     # ------------------------------------------------------------------
     logger.info("[4/4] Building HTML report...")
+    output_filename = _make_report_filename(hypothesis, run_id)
     builder = ReportBuilder(run_id=run_id)
     report_path = builder.build(
         hypothesis=hypothesis,
@@ -170,10 +183,11 @@ def _parse_args() -> argparse.Namespace:
         default=[],
         help="One or more article URLs to ingest",
     )
+    # --output is optional — if omitted, an auto-generated name is used
     parser.add_argument(
         "--output",
-        default="report.html",
-        help="Output filename for the HTML report (default: report.html)",
+        default=None,
+        help="(Optional) Override the auto-generated report filename.",
     )
     return parser.parse_args()
 
@@ -189,6 +203,5 @@ if __name__ == "__main__":
     report_path = run_pipeline(
         hypothesis=args.hypothesis,
         input_sources=all_sources,
-        output_filename=args.output,
     )
     print(f"\n✅ Report generated: {report_path}\n")

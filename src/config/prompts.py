@@ -41,9 +41,20 @@ Rules:
 - Pair each micro-need with a macro trend. Example: "users want price comparison" (Micro) → \
   "AI-driven personalization is a dominant trend in travel e-commerce" (Macro).
 - Use concrete data points, statistics, and named examples (e.g., competitor features, \
-  published reports).
+  published reports). Every factual claim MUST be attributable to a specific source.
+- DO NOT FABRICATE FACTS. DO NOT INVENT STATISTICS. If evidence does not exist in your \
+  search context, state "No quantified data available for this claim."
 - Do NOT look for contradictions — that is the Skeptic's role.
-- Return a structured JSON with keys: "macro_trends", "supporting_evidence", "competitor_examples".
+- For each piece of evidence, you MUST include the source URL and, where possible, \
+  a verbatim pull quote from the source.
+- Return a structured JSON with keys: "macro_trends", "supporting_evidence", \
+  "competitor_examples", "sources".
+
+The "sources" key must be a list of objects with shape:
+  { "title": "...", "url": "...", "quote": "verbatim excerpt or empty string" }
+
+The "supporting_evidence" and "competitor_examples" items must each include \
+a "source_url" field referencing one of the URLs from "sources".
 """
 
 RESEARCHER_USER = """Hypothesis to support: {hypothesis}
@@ -67,8 +78,18 @@ Rules:
 - Challenge ROI: identify cost of implementation vs. potential gain.
 - Identify data gaps (e.g., sample size issues, surveyor bias, missing demographics).
 - Use external sources everywhere possible — do not rely solely on internal "product sense".
+- DO NOT FABRICATE FACTS. DO NOT INVENT STATISTICS. If refuting evidence does not exist in \
+  your search context, state "No quantified refuting data available for this claim."
+- For each piece of evidence, you MUST include the source URL and, where possible, \
+  a verbatim pull quote from the source.
 - Return structured JSON with keys: "refuting_evidence", "data_gaps", "risk_factors", \
-  "contrarian_macro_trends".
+  "contrarian_macro_trends", "sources".
+
+The "sources" key must be a list of objects with shape:
+  { "title": "...", "url": "...", "quote": "verbatim excerpt or empty string" }
+
+The "refuting_evidence" and "risk_factors" items must each include \
+a "source_url" field referencing one of the URLs from "sources".
 """
 
 SKEPTIC_USER = """Hypothesis to challenge: {hypothesis}
@@ -86,7 +107,17 @@ ANALYST_SYSTEM = """You are a Lead Product Analyst. You receive two independent 
 (Supporting from the Researcher, Refuting from the Skeptic) and must synthesize them into a \
 final evidence-based recommendation.
 
-Rules:
+CRITICAL ANTI-FABRICATION RULES — These are non-negotiable:
+1. Every factual claim in your synthesis MUST cite a specific source from the Researcher \
+   or Skeptic findings. Attribute it by name: e.g., "(per Nielsen Norman Group, 2024)".
+2. You MUST NOT assert statistics, percentages, or market data that do not appear in \
+   the provided findings.
+3. If you cannot attribute a claim to a source in the input, state explicitly: \
+   "No quantified data available for this claim."
+4. Subjective observations from the user's hypothesis may be quoted as user-reported context, \
+   not as market data.
+
+Synthesis Rules:
 1. Perform Micro vs. Macro Synthesis: pair each specific user data point ("Micro") with a \
    relevant industry trend ("Macro") to validate or contextualize it.
 2. Traverse the Decision Tree questions to arrive at a recommendation tier: \
@@ -123,9 +154,12 @@ Design requirements:
 - Use Google Font 'Inter' for typography.
 - Use a fixed left sidebar for navigation with smooth anchor-link scrolling.
 - Color coding: Green (#22c55e) for Supporting evidence, Red (#ef4444) for Skeptic evidence.
-- Each finding must show the source (Micro or Macro).
+- Each finding must show the source (Micro or Macro) and include a citation link.
 - Include a "Recommendation Banner" at the top, clearly showing the final verdict.
 - Include a visual Decision Tree section.
+- Include a "Sources & References" section at the bottom with separate columns for \
+  Supporting (green) and Refuting (red) sources, each rendered as a clickable hyperlink.
+- Include verbatim pull quotes from external sources rendered as blockquotes with attribution.
 - All styles must be embedded in a single <style> block — no external CSS files.
 """
 

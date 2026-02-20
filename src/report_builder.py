@@ -40,6 +40,8 @@ class ReportBuilder:
         hypothesis: str,
         curated_results: list[dict],
         analyst_output: dict,
+        researcher_findings: dict | None = None,
+        skeptic_findings: dict | None = None,
         output_filename: str = "report.html",
     ) -> Path:
         """
@@ -49,11 +51,17 @@ class ReportBuilder:
         """
         self.llm.logger.info("Report Builder generating report...")
 
+        researcher_findings = researcher_findings or {}
+        skeptic_findings = skeptic_findings or {}
+
         # Ask the LLM to generate the narrative body sections
         narrative = self._generate_narrative(hypothesis, analyst_output)
 
         # Assemble the structured HTML shell
-        html = self._build_html(hypothesis, analyst_output, narrative)
+        html = self._build_html(
+            hypothesis, analyst_output, narrative,
+            researcher_findings, skeptic_findings
+        )
 
         out_path = Path(OUTPUT_DIR) / output_filename
         out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -75,7 +83,11 @@ class ReportBuilder:
         ) + (
             "\n\nReturn a JSON object with these HTML string keys:\n"
             "executive_summary, supporting_section, skeptic_section, "
-            "micro_macro_section, decision_tree_section, recommendation_section"
+            "micro_macro_section, decision_tree_section, recommendation_section\n\n"
+            "IMPORTANT: Where the analyst findings reference external sources, "
+            "include at least one HTML <blockquote> per section with a real verbatim "
+            "quote and a clickable <a href> citation link from the sources in the findings. "
+            "DO NOT fabricate quotes or URLs."
         )
         raw = self.llm.complete(
             system=REPORT_BUILDER_SYSTEM,
@@ -100,6 +112,8 @@ class ReportBuilder:
         hypothesis: str,
         analyst_output: dict,
         narrative: dict,
+        researcher_findings: dict,
+        skeptic_findings: dict,
     ) -> str:
         tier = analyst_output.get("recommendation_tier", "RE_EVALUATE")
         tier_style = TIER_STYLES.get(tier, TIER_STYLES["RE_EVALUATE"])
@@ -110,6 +124,18 @@ class ReportBuilder:
         )
         micro_macro_rows = self._render_micro_macro(
             analyst_output.get("micro_macro_pairs", [])
+        )
+        support_sources_html = self._render_sources(
+            researcher_findings.get("sources", []), "support"
+        )
+        refute_sources_html = self._render_sources(
+            skeptic_findings.get("sources", []), "refute"
+        )
+        support_quotes_html = self._render_blockquotes(
+            researcher_findings.get("sources", []), "support"
+        )
+        refute_quotes_html = self._render_blockquotes(
+            skeptic_findings.get("sources", []), "refute"
         )
 
         return f"""<!DOCTYPE html>
@@ -272,7 +298,58 @@ class ReportBuilder:
       background: var(--surface2);
       color: var(--green);
     }}
-    /* ---- Meta ---- */
+    /* ---- Blockquotes ---- */
+    blockquote {
+      border-left: 4px solid var(--accent);
+      margin: 1rem 0;
+      padding: 0.75rem 1.25rem;
+      background: var(--surface2);
+      border-radius: 0 8px 8px 0;
+      font-style: italic;
+      color: var(--muted);
+    }
+    blockquote cite {
+      display: block;
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      font-style: normal;
+      color: var(--accent);
+    }
+    blockquote.support-quote { border-left-color: var(--green); }
+    blockquote.refute-quote  { border-left-color: var(--red); }
+    /* ---- Sources grid ---- */
+    .sources-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    .sources-col h3 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+    .sources-col.support h3 { color: var(--green); }
+    .sources-col.refute  h3 { color: var(--red); }
+    .source-link {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+      font-size: 0.85rem;
+    }
+    .source-link .dot {
+      min-width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-top: 5px;
+    }
+    .source-link .dot.support { background: var(--green); }
+    .source-link .dot.refute  { background: var(--red); }
+    .source-link a { color: var(--muted); text-decoration: none; }
+    .source-link a:hover { color: var(--text); text-decoration: underline; }
     .meta {{ font-size: 0.8rem; color: var(--muted); margin-bottom: 2rem; }}
     .run-id {{ font-family: monospace; color: var(--accent); }}
   </style>
@@ -288,6 +365,7 @@ class ReportBuilder:
   <a href="#micro-macro">🔗 Micro → Macro</a>
   <a href="#decision-tree">🌳 Decision Tree</a>
   <a href="#final">📢 Final Analysis</a>
+  <a href="#sources">📎 Sources</a>
 </nav>
 
 <main>
@@ -317,6 +395,7 @@ class ReportBuilder:
     <div class="card-grid">
       {self._render_evidence_cards(analyst_output.get("supporting_summary", ""), "support")}
     </div>
+    {support_quotes_html}
     {narrative.get("supporting_section", "")}
   </section>
 
@@ -326,6 +405,7 @@ class ReportBuilder:
     <div class="card-grid">
       {self._render_evidence_cards(analyst_output.get("skeptic_rebuttal", ""), "refute")}
     </div>
+    {refute_quotes_html}
     {narrative.get("skeptic_section", "")}
   </section>
 
@@ -354,6 +434,22 @@ class ReportBuilder:
   <section id="final">
     <h2>📢 Final Analyst Recommendation</h2>
     {narrative.get("recommendation_section", f"<p>{analyst_output.get('final_recommendation', '')}</p>")}
+  </section>
+
+  <!-- Sources & References -->
+  <section id="sources">
+    <h2>📎 Sources &amp; References</h2>
+    <p style="margin-bottom:1rem">All sources gathered by the Researcher and Skeptic agents. Claims not listed here were not cited by the agents and should be treated as unverified context.</p>
+    <div class="sources-grid">
+      <div class="sources-col support">
+        <h3>Supporting Sources</h3>
+        {support_sources_html}
+      </div>
+      <div class="sources-col refute">
+        <h3>Refuting Sources</h3>
+        {refute_sources_html}
+      </div>
+    </div>
   </section>
 
 </main>
@@ -411,3 +507,53 @@ class ReportBuilder:
                 f'</div></div>'
             )
         return "\n".join(steps)
+
+    def _render_sources(self, sources: list, side: str) -> str:
+        """
+        Render a list of source dicts as clickable citation links.
+        `side` is either 'support' or 'refute' (controls dot colour).
+        """
+        if not sources:
+            return f"<p style='color:var(--muted);font-size:0.85rem'>No external sources recorded for this side.</p>"
+        items = []
+        for s in sources:
+            title = s.get("title") or "Untitled Source"
+            url = s.get("url", "")
+            link = (
+                f'<a href="{url}" target="_blank" rel="noopener noreferrer">{title}</a>'
+                if url else f"<span>{title}</span>"
+            )
+            items.append(
+                f'<div class="source-link">'
+                f'<div class="dot {side}"></div>'
+                f'{link}'
+                f'</div>'
+            )
+        return "\n".join(items)
+
+    def _render_blockquotes(self, sources: list, side: str) -> str:
+        """
+        Render snippet-based blockquotes under each evidence section.
+        Only renders sources that have a non-empty snippet.
+        Returns empty string if no quotes are available.
+        """
+        quotes = [s for s in sources if s.get("quote") or s.get("snippet")]
+        if not quotes:
+            return ""
+        rendered = []
+        for s in quotes[:3]:  # Cap at 3 quotes per section to avoid clutter
+            text = s.get("quote") or s.get("snippet", "")
+            title = s.get("title", "External Source")
+            url = s.get("url", "")
+            cite = (
+                f'<cite><a href="{url}" target="_blank" rel="noopener noreferrer">'
+                f'— {title}</a></cite>'
+                if url else f'<cite>— {title}</cite>'
+            )
+            rendered.append(
+                f'<blockquote class="{side}-quote">'
+                f'"{text[:300]}{"…" if len(text) > 300 else ""}"'
+                f'{cite}'
+                f'</blockquote>'
+            )
+        return "\n".join(rendered)

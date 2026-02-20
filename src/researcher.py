@@ -55,11 +55,11 @@ class Researcher:
         queries = self._generate_queries(hypothesis, curated_data)
         self.llm.logger.info("Generated %d search queries", len(queries))
 
-        # Execute searches and collect snippets
-        search_context = self._run_searches(queries)
+        # Execute searches and collect snippets + raw source metadata
+        search_context, raw_results = self._run_searches(queries)
 
         # Ask LLM to synthesize supporting findings
-        return self._synthesize(hypothesis, curated_data, search_context)
+        return self._synthesize(hypothesis, curated_data, search_context, raw_results)
 
     # ------------------------------------------------------------------
     # Query Generation
@@ -92,9 +92,14 @@ class Researcher:
     # Search Execution
     # ------------------------------------------------------------------
 
-    def _run_searches(self, queries: list[str]) -> str:
-        """Execute each query and concatenate summaries into a context block."""
+    def _run_searches(self, queries: list[str]) -> tuple[str, list[dict]]:
+        """
+        Execute each query, return:
+          - a formatted text block for LLM context
+          - the raw result list for citation tracking
+        """
         blocks: list[str] = []
+        raw_results: list[dict] = []
         for q in queries:
             results = self._search(q)
             self.llm.logger.debug("Query '%s' → %d results", q, len(results))
@@ -102,21 +107,26 @@ class Researcher:
                 title = r.get("title", "")
                 url = r.get("url", "")
                 snippet = r.get("snippet", "")
-                blocks.append(f"[{title}]({url})\n{snippet}")
+                blocks.append(f"SOURCE: {title}\nURL: {url}\nSNIPPET: {snippet}")
+                raw_results.append({"title": title, "url": url, "snippet": snippet})
             time.sleep(0.5)  # Polite rate limiting
-        return "\n\n".join(blocks)
+        return "\n\n".join(blocks), raw_results
 
     # ------------------------------------------------------------------
     # Synthesis
     # ------------------------------------------------------------------
 
     def _synthesize(
-        self, hypothesis: str, curated_data: dict, search_context: str
+        self, hypothesis: str, curated_data: dict, search_context: str, raw_results: list[dict]
     ) -> dict:
         user_msg = RESEARCHER_USER.format(
             hypothesis=hypothesis,
             curated_data=json.dumps(curated_data, indent=2)[:2000],
-        ) + f"\n\nSEARCH RESULTS:\n{search_context[:4000]}"
+        ) + (
+            f"\n\nSEARCH RESULTS (cite these by URL in your output):\n{search_context[:4000]}"
+            "\n\nIMPORTANT: Every claim you make MUST reference a URL from the above results. "
+            "DO NOT fabricate statistics or quotes. If no source supports a claim, say so."
+        )
 
         raw = self.llm.complete(
             system=RESEARCHER_SYSTEM,
@@ -124,7 +134,11 @@ class Researcher:
             model=AGENT_MODELS["researcher"],
             temperature=AGENT_TEMPERATURES["researcher"],
         )
-        return extract_json(raw)
+        result = extract_json(raw)
+        # Ensure raw search sources are always preserved in output
+        if "sources" not in result or not result["sources"]:
+            result["sources"] = raw_results
+        return result
 
     # ------------------------------------------------------------------
     # Default search stub (replace with real implementation)
