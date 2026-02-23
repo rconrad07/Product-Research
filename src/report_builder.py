@@ -350,6 +350,8 @@ class ReportBuilder:
     .source-link .dot.refute  { background: var(--red); }
     .source-link a { color: var(--muted); text-decoration: none; }
     .source-link a:hover { color: var(--text); text-decoration: underline; }
+    .unverified-link { color: var(--muted) !important; text-decoration: line-through !important; opacity: 0.7; }
+    .unverified-label { font-size: 0.7rem; color: var(--red); font-style: italic; font-weight: 600; margin-left: 4px; opacity: 0.8; }
     .meta {{ font-size: 0.8rem; color: var(--muted); margin-bottom: 2rem; }}
     .run-id {{ font-family: monospace; color: var(--accent); }}
   </style>
@@ -510,8 +512,7 @@ class ReportBuilder:
 
     def _render_sources(self, sources: list, side: str) -> str:
         """
-        Render a list of source dicts as clickable citation links.
-        `side` is either 'support' or 'refute' (controls dot colour).
+        Render a list of source dicts as clickable citation links with metadata.
         """
         if not sources:
             return f"<p style='color:var(--muted);font-size:0.85rem'>No external sources recorded for this side.</p>"
@@ -519,14 +520,21 @@ class ReportBuilder:
         for s in sources:
             title = s.get("title") or "Untitled Source"
             url = s.get("url", "")
+            pub = s.get("publication", "")
+            date = s.get("date", "")
+            
+            meta_str = ""
+            if pub or date:
+                meta_str = f"<br/><small style='color:var(--muted); opacity: 0.8;'>{pub}{' • ' if pub and date else ''}{date}</small>"
+            
             link = (
-                f'<a href="{url}" target="_blank" rel="noopener noreferrer">{title}</a>'
-                if url else f"<span>{title}</span>"
+                f'<a href="{url}" target="_blank" rel="noopener noreferrer">{title}</a>{meta_str}'
+                if url else f"<span>{title}</span>{meta_str}"
             )
             items.append(
                 f'<div class="source-link">'
                 f'<div class="dot {side}"></div>'
-                f'{link}'
+                f'<div>{link}</div>'
                 f'</div>'
             )
         return "\n".join(items)

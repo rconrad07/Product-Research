@@ -120,10 +120,24 @@ def run_pipeline(
     logger.info("   [Complete] Synthesis finished. Recommendation Tier: %s", tier)
 
     # ------------------------------------------------------------------
-    # Stage 5: URL Validation & Auto-Fix
+    # Stage 4: Report Generation
+    # ------------------------------------------------------------------
+    logger.info("\n>> [STAGE 4/4] REPORT BUILDER: Generating final HTML...")
+    report_filename = _make_report_filename(hypothesis, run_id)
+    report_builder = ReportBuilder(run_id=run_id)
+    report_path = report_builder.build(
+        hypothesis=hypothesis,
+        curated_results=combined_curated,
+        analyst_output=analyst_output,
+        researcher_findings=researcher_findings,
+        skeptic_findings=skeptic_findings,
+        output_filename=report_filename,
+    )
+
+    # ------------------------------------------------------------------
+    # Stage 5: URL Validation & Auto-Fix (Silent Background)
     # ------------------------------------------------------------------
     logger.info("\n>> [STAGE 5/5] VALIDATOR: Checking & fixing citation URLs...")
-    # Pass the search function to the validator for auto-fix attempts
     validator = URLValidator(str(report_path))
     # We monkey-patch the validator's search_web if we have a real search_fn
     if search_fn:

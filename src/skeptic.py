@@ -6,6 +6,8 @@ This agent is fully isolated from the Researcher — no shared context.
 """
 import json
 import time
+import re
+from datetime import datetime
 from typing import Any
 
 from src.config.prompts import SKEPTIC_SYSTEM, SKEPTIC_USER
@@ -96,24 +98,39 @@ class Skeptic:
                 if not url:
                     continue
                 
-                # GroundCite Check
+                # GroundCite 2.0
                 is_valid = False
+                verified_url = url
                 try:
                     if re.match(r'https?://[^/]+/?$', url):
                         continue
-                    resp = requests.head(url, timeout=5, allow_redirects=True)
-                    if 200 <= resp.status_code < 400:
-                        is_valid = True
-                except Exception:
-                    pass
+                    
+                    resp = requests.get(url, timeout=10, allow_redirects=True, headers={"User-Agent": "ProductResearchAgent/1.0"})
+                    if resp.status_code == 200 and "text/html" in resp.headers.get("Content-Type", ""):
+                        html_content = resp.text.lower()
+                        search_title = r.get("title", "").lower()
+                        clean_title = re.sub(r' - .*$| \| .*$', '', search_title).strip()
+                        if clean_title in html_content:
+                            is_valid = True
+                        
+                        canonical_match = re.search(r'<link [^>]*rel=["\']canonical["\'][^>]*href=["\']([^"\']+)["\']', resp.text, re.IGNORECASE)
+                        if canonical_match:
+                            verified_url = canonical_match.group(1)
+                except Exception as e:
+                    self.llm.logger.warning("Adversarial verification failed for %s: %s", url, str(e))
                 
-                if not is_valid:
+                # Insight-First
+                if not url:
                     continue
 
                 title = r.get("title", "")
                 snippet = r.get("snippet", "")
-                blocks.append(f"SOURCE: {title}\nURL: {url}\nSNIPPET: {snippet}")
-                raw_results.append({"title": title, "url": url, "snippet": snippet})
+                blocks.append(f"SOURCE: {title}\nURL: {verified_url}\nSNIPPET: {snippet}")
+                raw_results.append({
+                    "title": title, 
+                    "url": verified_url, 
+                    "snippet": snippet
+                })
                 
                 if len(raw_results) >= MAX_SEARCH_RESULTS:
                     break
@@ -127,12 +144,14 @@ class Skeptic:
     def _synthesize(
         self, hypothesis: str, curated_data: dict, search_context: str, raw_results: list[dict]
     ) -> dict:
+        current_date = datetime.now().strftime("%B %d, %Y")
         user_msg = SKEPTIC_USER.format(
             hypothesis=hypothesis,
             curated_data=json.dumps(curated_data, indent=2)[:2000],
         ) + (
             f"\n\nSEARCH RESULTS (cite these by URL in your output):\n{search_context[:4000]}"
-            "\n\nCRITICAL: Every refuting claim MUST reference a specific deep-link URL (not a homepage). "
+            f"\n\nTODAY'S DATE: {current_date}"
+            "\n\nCRITICAL: Every refuting claim MUST reference a specific deep-link URL. "
             "\nQUOTE SELECTION RULES: "
             "1. Start where the thought begins. "
             "2. Include reasoning. "
@@ -142,7 +161,7 @@ class Skeptic:
         )
 
         raw = self.llm.complete(
-            system=SKEPTIC_SYSTEM,
+            system=SKEPTIC_SYSTEM.format(current_date=current_date),
             user=user_msg,
             model=AGENT_MODELS["skeptic"],
             temperature=AGENT_TEMPERATURES["skeptic"],

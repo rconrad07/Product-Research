@@ -6,6 +6,8 @@ This agent is isolated — it does not communicate with the Skeptic.
 """
 import json
 import time
+import re
+from datetime import datetime
 from typing import Any
 
 from src.config.prompts import RESEARCHER_SYSTEM, RESEARCHER_USER
@@ -103,35 +105,56 @@ class Researcher:
         for q in queries:
             results = self._search(q)
             self.llm.logger.debug("Query '%s' → %d results", q, len(results))
-            for r in results[:MAX_SEARCH_RESULTS * 2]:  # Fetch extra for filtering
+            for r in results[:MAX_SEARCH_RESULTS * 2]:
                 url = r.get("url", "")
                 if not url:
                     continue
                 
-                # GroundCite Check: Is it a valid deep-link?
+                # GroundCite 2.0: Deep Programmatic Verification
                 is_valid = False
+                verified_url = url
                 try:
                     # Reject homepages
                     if re.match(r'https?://[^/]+/?$', url):
                         continue
                         
-                    resp = requests.head(url, timeout=5, allow_redirects=True)
-                    if 200 <= resp.status_code < 400:
-                        is_valid = True
-                except Exception:
-                    pass
+                    # GET request to check content
+                    resp = requests.get(url, timeout=10, allow_redirects=True, headers={"User-Agent": "ProductResearchAgent/1.0"})
+                    if resp.status_code == 200 and "text/html" in resp.headers.get("Content-Type", ""):
+                        html_content = resp.text.lower()
+                        
+                        # 1. Verify Article Title (or significant part of it) in HTML
+                        search_title = r.get("title", "").lower()
+                        # Clean title for fuzzy match (remove common site names)
+                        clean_title = re.sub(r' - .*$| \| .*$', '', search_title).strip()
+                        if clean_title in html_content:
+                            is_valid = True
+                        
+                        # 2. Extract Canonical URL
+                        canonical_match = re.search(r'<link [^>]*rel=["\']canonical["\'][^>]*href=["\']([^"\']+)["\']', resp.text, re.IGNORECASE)
+                        if canonical_match:
+                            verified_url = canonical_match.group(1)
+                            
+                except Exception as e:
+                    self.llm.logger.warning("Verification failed for %s: %s", url, str(e))
                 
-                if not is_valid:
+                # Insight-First: Pass all results to the LLM, even if verification is flaky.
+                # Only skip if URL is missing entirely.
+                if not url:
                     continue
 
                 title = r.get("title", "")
                 snippet = r.get("snippet", "")
-                blocks.append(f"SOURCE: {title}\nURL: {url}\nSNIPPET: {snippet}")
-                raw_results.append({"title": title, "url": url, "snippet": snippet})
+                blocks.append(f"SOURCE: {title}\nURL: {verified_url}\nSNIPPET: {snippet}")
+                raw_results.append({
+                    "title": title, 
+                    "url": verified_url, 
+                    "snippet": snippet
+                })
                 
                 if len(raw_results) >= MAX_SEARCH_RESULTS:
                     break
-            time.sleep(0.5)  # Polite rate limiting
+            time.sleep(0.5)
         return "\n\n".join(blocks), raw_results
 
     # ------------------------------------------------------------------
@@ -141,12 +164,14 @@ class Researcher:
     def _synthesize(
         self, hypothesis: str, curated_data: dict, search_context: str, raw_results: list[dict]
     ) -> dict:
+        current_date = datetime.now().strftime("%B %d, %Y")
         user_msg = RESEARCHER_USER.format(
             hypothesis=hypothesis,
             curated_data=json.dumps(curated_data, indent=2)[:2000],
         ) + (
             f"\n\nSEARCH RESULTS (cite these by URL in your output):\n{search_context[:4000]}"
-            "\n\nCRITICAL: Every claim you make MUST reference a specific deep-link URL (not a homepage). "
+            f"\n\nTODAY'S DATE: {current_date}"
+            "\n\nCRITICAL: Every claim you make MUST reference a specific deep-link URL. "
             "\nQUOTE SELECTION RULES: "
             "1. Start where the thought begins. "
             "2. Include reasoning. "
@@ -156,7 +181,7 @@ class Researcher:
         )
 
         raw = self.llm.complete(
-            system=RESEARCHER_SYSTEM,
+            system=RESEARCHER_SYSTEM.format(current_date=current_date),
             user=user_msg,
             model=AGENT_MODELS["researcher"],
             temperature=AGENT_TEMPERATURES["researcher"],

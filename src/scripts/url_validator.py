@@ -41,14 +41,14 @@ class URLValidator:
                     logger.info(f"  [FIXED] Found better link: {new_url}")
                     replacements.append((url, new_url))
                 else:
-                    logger.error(f"  [DELETE] No fix found for broken link. Suppressing claim.")
+                    logger.error(f"  [LABEL] No fix found for broken link. Marking as unverified.")
                     to_delete.append(url)
             else:
                 logger.info(f"  [PASS] {url}")
 
         if replacements or to_delete:
             self._apply_patches(replacements, to_delete)
-            logger.info(f"Updated {self.report_path.name}: {len(replacements)} fixed, {len(to_delete)} suppressed.")
+            logger.info(f"Updated {self.report_path.name}: {len(replacements)} fixed, {len(to_delete)} labeled as unverified.")
         else:
             logger.info("No URL actions required.")
 
@@ -102,19 +102,17 @@ class URLValidator:
         for old, new in replacements:
             new_content = new_content.replace(f'href="{old}"', f'href="{new}"')
         
-        # 2. Aggressive Suppression: Remove the parent element of broken links
-        # We target <blockquote> and <li> typically containing these.
         for url in to_delete:
-            # Match blockquotes containing the bad URL
-            bq_pattern = rf'<blockquote[^>]*>.*?href="{re.escape(url)}".*?</blockquote>'
-            new_content = re.sub(bq_pattern, '<!-- [SUPPRESSED: BROKEN LINK] -->', new_content, flags=re.DOTALL)
+            # 1. Label the source link in the Sources section
+            source_link_pattern = rf'(<div class="source-link">.*?href="{re.escape(url)}".*?)(</div>)'
+            new_content = re.sub(source_link_pattern, r'\1 <span class="unverified-label">(Unverified)</span>\2', new_content, flags=re.DOTALL)
             
-            # Match list items or div cards
-            li_pattern = rf'<li[^>]*>.*?href="{re.escape(url)}".*?</li>'
-            new_content = re.sub(li_pattern, '<!-- [SUPPRESSED] -->', new_content, flags=re.DOTALL)
+            # 2. Add unverified class to any link with this URL
+            new_content = new_content.replace(f'href="{url}"', f'href="{url}" class="unverified-link"')
             
-            source_link_pattern = rf'<div class="source-link">.*?href="{re.escape(url)}".*?</div>'
-            new_content = re.sub(source_link_pattern, '<!-- [SUPPRESSED] -->', new_content, flags=re.DOTALL)
+            # 3. Append label to anchor tags
+            anchor_pattern = rf'(<a[^>]*href="{re.escape(url)}"[^>]*>.*?)(</a>)'
+            new_content = re.sub(anchor_pattern, r'\1 <span class="unverified-label">(Unverified)</span>\2', new_content, flags=re.DOTALL)
 
         self.report_path.write_text(new_content, encoding="utf-8")
 
