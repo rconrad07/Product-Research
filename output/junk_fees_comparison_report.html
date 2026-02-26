@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Junk Fee Display Comparison: Hospitality Lead Players</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3350;
+      --text: #e2e8f0;
+      --muted: #8892a4;
+      --green: #22c55e;
+      --red: #ef4444;
+      --purple: #a78bfa;
+      --accent: #6366f1;
+      --sidebar-w: 260px;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+    }
+    nav#sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: var(--sidebar-w);
+      height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 2rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      overflow-y: auto;
+    }
+    nav#sidebar .brand {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+    }
+    nav#sidebar a {
+      display: block;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: background 0.15s, color 0.15s;
+    }
+    nav#sidebar a:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+    main {
+      margin-left: var(--sidebar-w);
+      padding: 3rem 3.5rem;
+      max-width: 960px;
+      width: 100%;
+    }
+    section { margin-bottom: 3rem; }
+    h1 { font-size: 2.2rem; font-weight: 700; margin-bottom: 1rem; color: #fff; }
+    h2 { font-size: 1.4rem; font-weight: 600; color: var(--text); margin-bottom: 1.25rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    p { font-size: 1rem; line-height: 1.7; color: var(--muted); margin-bottom: 1rem; }
+    
+    .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .company-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      position: relative;
+    }
+    .company-card h3 { color: var(--accent); margin-bottom: 0.5rem; font-size: 1.1rem; }
+    .company-card .score { font-size: 0.8rem; font-weight: 700; color: var(--green); text-transform: uppercase; margin-bottom: 1rem; }
+    .company-card p { font-size: 0.9rem; }
+    
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: var(--surface); border-radius: 10px; overflow: hidden; }
+    th { background: var(--surface2); color: var(--text); padding: 1rem; text-align: left; }
+    td { padding: 1rem; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.9rem; }
+    
+    .legal-box {
+      background: rgba(167, 139, 250, 0.1);
+      border-left: 4px solid var(--purple);
+      padding: 1.25rem;
+      border-radius: 0 10px 10px 0;
+      margin-bottom: 2rem;
+    }
+    .legal-box h4 { color: var(--purple); margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    
+    .highlight { color: #fff; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <div class="brand">Product Research Analyst</div>
+  <a href="#intro">Introduction</a>
+  <a href="#market-context">Market Context</a>
+  <a href="#comparison">Company Comparison</a>
+  <a href="#detailed-analysis">Detailed Analysis</a>
+  <a href="#conclusion">Strategic Recap</a>
+</nav>
+
+<main>
+  <h1>Total Fees & Taxes Display Comparison</h1>
+  <p class="meta">Analysis of Junk Fee Transparency across Vacation Ownership Leaders</p>
+
+  <section id="intro">
+    <h2>Executive Summary</h2>
+    <p>Following the enactment of California's <strong>SB 478</strong> and the <strong>FTC's Junk Fees Rule</strong>, hospitality companies have shifted toward "upfront total pricing." This analysis compares how four leading vacation ownership brands—Hilton Grand Vacations, Marriott Vacations, Disney Vacations Club, and Starwood (Vistana)—have implemented these changes to improve the booking experience.</p>
+  </section>
+
+  <section id="market-context">
+    <div class="legal-box">
+      <h4>Law & Regulatory Context</h4>
+      <p>As of 2024, US-based lodging providers are increasingly required to show all <span class="highlight">mandatory fees</span> (resort fees, cleaning fees, etc.) at the first price display. While taxes are occasionally permitted to be added later (depending on state law), the industry trend is toward "Total Price" transparency.</p>
+    </div>
+  </section>
+
+  <section id="comparison">
+    <h2>Competitive Matrix</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Upfront Strategy</th>
+          <th>Fee Transparency</th>
+          <th>Rating</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Marriott Vacations (MVC)</strong></td>
+          <td>Inclusive "Total Rate" Default</td>
+          <td>High (Embedded in stay cost)</td>
+          <td>⭐⭐⭐⭐⭐</td>
+        </tr>
+        <tr>
+          <td><strong>Disney Vacations Club (DVC)</strong></td>
+          <td>Fee-Free Model (Points)</td>
+          <td>Superior (N/A for most fees)</td>
+          <td>⭐⭐⭐⭐⭐</td>
+        </tr>
+        <tr>
+          <td><strong>Hilton Grand Vacations (HGV)</strong></td>
+          <td>"Total Price" Toggle Choice</td>
+          <td>Moderate/High (Clearly Labeled)</td>
+          <td>⭐⭐⭐⭐</td>
+        </tr>
+        <tr>
+          <td><strong>Starwood / Vistana</strong></td>
+          <td>Marriott-style Integration</td>
+          <td>Moderate (Consistency focused)</td>
+          <td>⭐⭐⭐⭐</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="detailed-analysis">
+    <h2>Detailed Analysis</h2>
+    <div class="comparison-grid">
+      <div class="company-card">
+        <h3>Marriott Vacations Club</h3>
+        <div class="score">Excellent Transparency</div>
+        <p>Following a 2021 settlement, Marriott (including MVC) became the gold standard for "total pricing." Their UI typically shows the <span class="highlight">full stay cost</span> including resort fees as the primary figure, eliminating sticker shock during the final booking steps.</p>
+      </div>
+      <div class="company-card">
+        <h3>Disney Vacations Club</h3>
+        <div class="score">User-Centric (Fee Minimalist)</div>
+        <p>DVC's "user friendliness" comes from its business model: they rarely charge separate resort fees. Instead, they provide explicit <span class="highlight">tax lookup tables</span> for regions like Anaheim and Hawaii, ensuring point-based users are never surprised by per-night taxes.</p>
+      </div>
+      <div class="company-card">
+        <h3>Hilton Grand Vacations</h3>
+        <div class="score">High Compliance (Toggle Based)</div>
+        <p>HGV uses a modern "Total Price" toggle. While the default can sometimes be nightly, the <span class="highlight">breakdown of taxes and fees</span> is just one click away and very granular, reflecting a high commitment to recent transparency laws.</p>
+      </div>
+      <div class="company-card">
+        <h3>Starwood (Vistana)</h3>
+        <div class="score">Improving Consistency</div>
+        <p>Vistana leverages the Marriott engine. Many properties, such as Sheraton Vistana, actively market <span class="highlight">"No Extra Resort Fees"</span> as a competitive advantage. This marketing-focused transparency is highly effective for conversion.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="conclusion">
+    <h2>Strategic Recap</h2>
+    <p>To maximize user friendliness, companies should follow the <strong>Marriott Model</strong> of presenting a single, all-in price by default. Disney remains the leader in trust by avoiding junk fees entirely, while Hilton’s toggle approach offers flexibility but slightly more friction than Marriott’s "Inclusive Default."</p>
+  </section>
+</main>
+
+</body>
+</html>

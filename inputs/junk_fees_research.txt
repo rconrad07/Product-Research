@@ -1,0 +1,26 @@
+Summary of Research on Total Fee Display for Hospitality Companies
+
+1. Hilton Grand Vacations (HGV):
+- HGV has updated its booking interface to include "Total Price" options. 
+- Fees such as maintenance and club dues are billed separately for owners, but for guests booking resorts on cash, resort fees are now more prominently displayed upfront or included in the total rate to comply with California SB 478 and the FTC Junk Fees Rule.
+- The UI often features a toggle to switch between "Price per Night" and "Total Price with Taxes & Fees".
+
+2. Marriott Vacations (MVC):
+- Marriott was a pioneer in transparent pricing due to a 2021 settlement with the Pennsylvania AG.
+- By mid-2023, Marriott (including MVC resorts) began showing the "Total Rate" (inclusive of resort fees) as the default or prominently alongside the nightly rate.
+- This is considered the industry gold standard for transparency.
+
+3. Disney Vacation Club (DVC):
+- DVC avoids "junk fees" primarily by having no resort fees for members using points.
+- They are extremely transparent about the "Transient Occupancy Tax" (TOT) for resorts in Anaheim and Hawaii, providing specific PDF/table charts for these costs.
+- For cash bookings, taxes are shown clearly at the selection stage, not just at checkout.
+
+4. Starwood Vacation Ownership (Vistana):
+- Now part of Marriott Vacations Worldwide, Vistana has adopted many of Marriott's transparency practices.
+- Sheraton Vistana Resort, for instance, specifically markets "No Resort Fees" to appeal to fee-wary travelers.
+- Pricing flows for Vistana properties on the Marriott platform benefit from the "Total Price" display mandates.
+
+Comparison:
+- Marriott/Vistana lead in "upfront total" display.
+- Disney leads in "fee avoidance" (simply not charging them).
+- Hilton has caught up with "Total Price" toggles but still has a more complex breakdown for various ownership tiers.
