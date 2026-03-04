@@ -66,10 +66,19 @@ class URLValidator:
         return unique_urls
 
     def _check_url(self, url: str) -> Tuple[bool, str]:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+        }
         try:
-            if re.match(r'https?://[^/]+/?$', url):
+            # Check for pure homepages (e.g. nngroup.com/ or domain.com)
+            # but allow articles like domain.com/article
+            path = re.sub(r'https?://[^/]+', '', url).strip('/')
+            if not path:
                 return False, "HOMEPAGE_LINK"
-            resp = requests.head(url, timeout=10, allow_redirects=True)
+
+            # Use GET because many sites block HEAD or return 404/403 for it
+            resp = requests.get(url, timeout=12, allow_redirects=True, headers=headers)
             if 200 <= resp.status_code < 400:
                 return True, "OK"
             return False, f"HTTP_{resp.status_code}"
