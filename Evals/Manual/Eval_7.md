@@ -9,6 +9,7 @@
 - I'm not seeing any external references or any analysis from the internet.
 - The quantitative comments are a nice touch, however they are less trustworthy without a URL citation to validate the numbers or learn more.
 - The curator.py and researcher.py should be curating external citations and adding them to the report.
+- After the second run, I feel like the url validation process that we previously worked on is no longer working either because each link takes me to a 404 error page.
 
 ## Formatting
 
