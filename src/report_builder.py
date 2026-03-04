@@ -17,6 +17,7 @@ Sections (Minto Pyramid order):
   10. Sources & References
 """
 import json
+import re
 from datetime import datetime
 from pathlib import Path
 
@@ -119,9 +120,21 @@ class ReportBuilder:
         )
         try:
             from src.utils import extract_json  # noqa: PLC0415
-            return extract_json(raw)
+            data = extract_json(raw)
+            # Sanitize narrative text: remove Markdown artifacts like **bold** or *italics*
+            for key in ["executive_summary", "problem_framing_section", "mece_section", 
+                        "macro_evidence_section", "supporting_section", "skeptic_section",
+                        "action_plan_section", "risk_register_section", "recommendation_section"]:
+                if key in data and isinstance(data[key], str):
+                    # Strip ** and * but keep the text
+                    data[key] = re.sub(r'\*\*([^*]+)\*\*', r'\1', data[key])
+                    data[key] = re.sub(r'\*([^*]+)\*', r'\1', data[key])
+            return data
         except ValueError:
-            return {"executive_summary": raw}
+            # Fallback for plain text, strip markdown too
+            clean_raw = re.sub(r'\*\*([^*]+)\*\*', r'\1', raw)
+            clean_raw = re.sub(r'\*([^*]+)\*', r'\1', clean_raw)
+            return {"executive_summary": clean_raw}
 
     # ------------------------------------------------------------------
     # HTML Shell

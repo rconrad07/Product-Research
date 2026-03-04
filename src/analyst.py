@@ -8,6 +8,7 @@ Stage 3: Synthesizes findings from Researcher (Pro) and Skeptic (Con) using:
   - Board-Level Communication Standards (decisive, fact-based, quantified)
 """
 import json
+import re
 
 from src.config.prompts import ANALYST_SYSTEM, ANALYST_USER
 from src.config.settings import AGENT_MODELS, AGENT_TEMPERATURES
@@ -142,6 +143,19 @@ class Analyst:
         )
 
         result = extract_json(raw)
+        
+        # Sanitize result contents: remove Markdown artifacts from all strings
+        def _sanitize(obj):
+            if isinstance(obj, str):
+                obj = re.sub(r'\*\*([^*]+)\*\*', r'\1', obj)
+                return re.sub(r'\*([^*]+)\*', r'\1', obj)
+            elif isinstance(obj, list):
+                return [_sanitize(x) for x in obj]
+            elif isinstance(obj, dict):
+                return {k: _sanitize(v) for k, v in obj.items()}
+            return obj
+            
+        result = _sanitize(result)
         self._validate_result(result)
         return result
 
