@@ -18,22 +18,24 @@ DEFAULT_MODEL: str = "antigravity-native"
 
 # Per-agent model selection (can override DEFAULT_MODEL)
 AGENT_MODELS: dict = {
-    "curator":    DEFAULT_MODEL,
-    "researcher": DEFAULT_MODEL,
-    "skeptic":    DEFAULT_MODEL,
-    "analyst":    DEFAULT_MODEL,
+    "curator":        DEFAULT_MODEL,
+    "researcher":     DEFAULT_MODEL,
+    "skeptic":        DEFAULT_MODEL,
+    "analyst":        DEFAULT_MODEL,
     "report_builder": DEFAULT_MODEL,
+    "arbiter":        DEFAULT_MODEL,
 }
 
 # ---------------------------------------------------------------------------
 # Temperature (controls creativity vs. determinism)
 # ---------------------------------------------------------------------------
 AGENT_TEMPERATURES: dict = {
-    "curator":    0.2,   # Deterministic extraction
-    "researcher": 0.4,   # Moderate — factual but thorough
-    "skeptic":    0.7,   # High creativity — adversarial framing
-    "analyst":    0.1,   # Near-deterministic — logical synthesis
+    "curator":        0.2,   # Deterministic extraction
+    "researcher":     0.4,   # Moderate — factual but thorough
+    "skeptic":        0.7,   # High creativity — adversarial framing
+    "analyst":        0.1,   # Near-deterministic — logical synthesis
     "report_builder": 0.3,
+    "arbiter":        0.0,   # Fully deterministic — audit must be consistent
 }
 
 # ---------------------------------------------------------------------------

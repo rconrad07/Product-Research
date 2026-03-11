@@ -1,0 +1,89 @@
+{
+  "_meta": {
+    "expected_outcome": "fail",
+    "expected_judge": "alignment",
+    "injected_error": "MECE compliance has two false values, MECE decomposition exceeds 6 branches, and an action_plan item has an unrecognised horizon.",
+    "description": "Analyst output violates MECE constraints and action plan horizon rules. Alignment judge must catch this."
+  },
+  "researcher_output": {
+    "macro_trends": ["Comparison tooling is now standard in mid-market SaaS."],
+    "supporting_evidence": [
+      {
+        "claim": "Side-by-side comparison reduces sales cycle by 28%.",
+        "source_url": "https://www.mckinsey.com/industries/technology/our-insights/saas-comparison-tool-impact-2026"
+      }
+    ],
+    "competitor_examples": [],
+    "sources": [
+      {
+        "title": "SaaS Comparison Tool Impact — McKinsey Technology Practice",
+        "url": "https://www.mckinsey.com/industries/technology/our-insights/saas-comparison-tool-impact-2026",
+        "url_verbatim": "https://www.mckinsey.com/industries/technology/our-insights/saas-comparison-tool-impact-2026",
+        "publication": "McKinsey & Company",
+        "date": "2026-02-01",
+        "quote": "Side-by-side feature comparison reduces enterprise sales cycle length by 28% when implemented correctly."
+      }
+    ]
+  },
+  "skeptic_output": {
+    "refuting_evidence": [],
+    "data_gaps": [],
+    "risk_factors": [],
+    "contrarian_macro_trends": [],
+    "sources": []
+  },
+  "analyst_output": {
+    "governing_question": "Should we add a comparison tool?",
+    "economic_objective": "GROWTH",
+    "mece_decomposition": [
+      "Market Demand",
+      "Competitive Parity",
+      "Revenue Impact",
+      "Execution Risk",
+      "Cannibalization Risk",
+      "Technical Feasibility",
+      "Regulatory Compliance"
+    ],
+    "mece_compliance_check": {
+      "no_category_overlap": false,
+      "no_missing_economic_drivers": true,
+      "each_rec_linked_to_outcome": true,
+      "language_is_executive_ready": false,
+      "governing_question_answered": true,
+      "tiers_justified_by_evidence": true
+    },
+    "hypothesis_validation": { "verdict": "SUPPORTED", "rationale": "Evidence is clear." },
+    "micro_macro_pairs": [{ "macro": "AI-first search", "micro": "No comparison on our site" }],
+    "recommendation_tier": "STRONG_BUILD",
+    "supporting_summary": "Very strong evidence to build immediately.",
+    "skeptic_rebuttal": "Risks are low and manageable.",
+    "final_recommendation": "Ship immediately.",
+    "action_plan": [
+      {
+        "horizon": "Immediate",
+        "description": "Design wireframes.",
+        "impact": "High",
+        "effort": "Low",
+        "feasibility": "High",
+        "economic_outcome": "Faster closure"
+      },
+      {
+        "horizon": "Next Quarter",
+        "description": "Ship and A/B test the comparison widget.",
+        "impact": "High",
+        "effort": "Medium",
+        "feasibility": "High",
+        "economic_outcome": "15% uplift in conversion"
+      }
+    ],
+    "risk_register": [
+      {
+        "risk": "Scope creep delays launch.",
+        "likelihood": "High",
+        "impact": "Medium",
+        "control": "Weekly scope review.",
+        "residual_risk": "Low"
+      }
+    ]
+  }
+}

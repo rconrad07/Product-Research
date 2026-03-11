@@ -1,0 +1,54 @@
+{
+  "_meta": {
+    "expected_outcome": "fail",
+    "expected_judge": "schema_compliance",
+    "injected_error": "AnalystOutput is missing required keys: 'action_plan' and 'risk_register'. Also, economic_objective is set to an invalid enum value.",
+    "description": "Analyst returns a structurally incomplete output with an invalid enum. Schema compliance judge must catch this."
+  },
+  "researcher_output": {
+    "macro_trends": ["AI adoption is accelerating in B2B SaaS."],
+    "supporting_evidence": [
+      {
+        "claim": "Comparison tools shorten sales cycles.",
+        "source_url": "https://www.forrester.com/report/b2b-saas-2026-annual-review"
+      }
+    ],
+    "competitor_examples": [],
+    "sources": [
+      {
+        "title": "B2B SaaS 2026 Annual Review",
+        "url": "https://www.forrester.com/report/b2b-saas-2026-annual-review",
+        "url_verbatim": "https://www.forrester.com/report/b2b-saas-2026-annual-review",
+        "publication": "Forrester",
+        "date": "2026-01-20",
+        "quote": "Comparison tooling is now table stakes in mid-market SaaS."
+      }
+    ]
+  },
+  "skeptic_output": {
+    "refuting_evidence": [],
+    "data_gaps": ["No data on retention uplift."],
+    "risk_factors": [],
+    "contrarian_macro_trends": [],
+    "sources": []
+  },
+  "analyst_output": {
+    "governing_question": "Should we build a comparison tool?",
+    "economic_objective": "REVENUE",
+    "mece_decomposition": ["Market Demand", "Competitive Parity"],
+    "mece_compliance_check": {
+      "no_category_overlap": true,
+      "no_missing_economic_drivers": true,
+      "each_rec_linked_to_outcome": true,
+      "language_is_executive_ready": true,
+      "governing_question_answered": true,
+      "tiers_justified_by_evidence": true
+    },
+    "hypothesis_validation": { "verdict": "SUPPORTED", "rationale": "Evidence is clear." },
+    "micro_macro_pairs": [{ "macro": "AI-first search", "micro": "No comparison on our site" }],
+    "recommendation_tier": "BUILD_MVP",
+    "supporting_summary": "Strong evidence to build.",
+    "skeptic_rebuttal": "Risks are manageable.",
+    "final_recommendation": "Proceed with MVP."
+  }
+}

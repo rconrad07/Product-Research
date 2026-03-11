@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "expected_outcome": "fail",
+    "expected_judge": "url_integrity",
+    "injected_error": "Researcher sources contain root-domain homepages instead of deep-linked article paths. Seeded from Eval_5.md feedback.",
+    "description": "Researcher returns homepage URLs — the most common real-world failure per Eval_5.md."
+  },
+  "researcher_output": {
+    "macro_trends": [
+      "AI-first search adoption grew 38% YoY through Q1 2026"
+    ],
+    "supporting_evidence": [
+      {
+        "claim": "Comparison tools reduce purchase decision time by an average of 34% in SaaS verticals.",
+        "source_url": "https://www.gartner.com"
+      }
+    ],
+    "competitor_examples": [],
+    "sources": [
+      {
+        "title": "2026 B2B SaaS Buying Trends",
+        "url": "https://www.gartner.com",
+        "url_verbatim": "https://www.gartner.com",
+        "publication": "Gartner",
+        "date": "2026-01-15",
+        "quote": "Buyers who used structured comparison tools completed vendor selection 34% faster."
+      },
+      {
+        "title": "HBR Article on Comparison Fatigue",
+        "url": "https://hbr.org",
+        "url_verbatim": "https://hbr.org",
+        "publication": "Harvard Business Review",
+        "date": "2025-11-08",
+        "quote": "62% of B2B buyers report decision paralysis."
+      }
+    ]
+  },
+  "skeptic_output": {
+    "refuting_evidence": [],
+    "data_gaps": ["No longitudinal retention data."],
+    "risk_factors": [],
+    "contrarian_macro_trends": [],
+    "sources": []
+  },
+  "analyst_output": {
+    "governing_question": "Should we add a comparison tool?",
+    "economic_objective": "GROWTH",
+    "mece_decomposition": ["Market Demand", "Execution Risk"],
+    "mece_compliance_check": {
+      "no_category_overlap": true,
+      "no_missing_economic_drivers": false,
+      "each_rec_linked_to_outcome": true,
+      "language_is_executive_ready": true,
+      "governing_question_answered": true,
+      "tiers_justified_by_evidence": false
+    },
+    "hypothesis_validation": { "verdict": "SUPPORTED", "rationale": "Data supports building." },
+    "micro_macro_pairs": [{ "macro": "AI-first search", "micro": "No comparison feature on our site" }],
+    "recommendation_tier": "BUILD_MVP",
+    "supporting_summary": "Evidence supports the build.",
+    "skeptic_rebuttal": "Risks are manageable.",
+    "final_recommendation": "Proceed with MVP.",
+    "action_plan": [
+      { "horizon": "Immediate", "description": "Define scope.", "impact": "High", "effort": "Low", "feasibility": "High", "economic_outcome": "Faster closure" }
+    ],
+    "risk_register": [
+      { "risk": "Upsell cannibalisation", "likelihood": "Medium", "impact": "High", "control": "Gate by tier", "residual_risk": "Low" }
+    ]
+  }
+}

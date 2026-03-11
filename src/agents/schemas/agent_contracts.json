@@ -1,0 +1,213 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "schemas": {
+    "CuratorOutput": {
+      "type": "object",
+      "required": ["source_type", "summary", "key_data_points", "verbatim_quotes", "metadata"],
+      "properties": {
+        "source_type": { "type": "string" },
+        "summary": { "type": "string", "minLength": 10 },
+        "key_data_points": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "verbatim_quotes": { "type": "array", "items": { "type": "string" } },
+        "metadata": { "type": "object" }
+      },
+      "additionalProperties": false
+    },
+    "ResearcherOutput": {
+      "type": "object",
+      "required": ["macro_trends", "supporting_evidence", "competitor_examples", "sources"],
+      "properties": {
+        "macro_trends": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "supporting_evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["claim", "source_url"],
+            "properties": {
+              "claim": { "type": "string" },
+              "source_url": { "type": "string", "pattern": "^https?://.+/.+" }
+            }
+          }
+        },
+        "competitor_examples": { "type": "array", "items": { "type": "object" } },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["title", "url", "url_verbatim", "publication", "date"],
+            "properties": {
+              "title": { "type": "string" },
+              "url": { "type": "string", "pattern": "^https?://.+/.+" },
+              "url_verbatim": { "type": "string", "pattern": "^https?://.+/.+" },
+              "publication": { "type": "string" },
+              "date": { "type": "string" },
+              "quote": { "type": "string" }
+            }
+          },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "SkepticOutput": {
+      "type": "object",
+      "required": ["refuting_evidence", "data_gaps", "risk_factors", "contrarian_macro_trends", "sources"],
+      "properties": {
+        "refuting_evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["claim", "source_url"],
+            "properties": {
+              "claim": { "type": "string" },
+              "source_url": { "type": "string", "pattern": "^https?://.+/.+" }
+            }
+          }
+        },
+        "data_gaps": { "type": "array", "items": { "type": "string" } },
+        "risk_factors": { "type": "array", "items": { "type": "object" } },
+        "contrarian_macro_trends": { "type": "array", "items": { "type": "string" } },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["title", "url", "url_verbatim", "publication", "date"],
+            "properties": {
+              "title": { "type": "string" },
+              "url": { "type": "string", "pattern": "^https?://.+/.+" },
+              "url_verbatim": { "type": "string", "pattern": "^https?://.+/.+" },
+              "publication": { "type": "string" },
+              "date": { "type": "string" },
+              "quote": { "type": "string" }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "AnalystOutput": {
+      "type": "object",
+      "required": [
+        "governing_question", "economic_objective", "mece_decomposition",
+        "mece_compliance_check", "hypothesis_validation", "micro_macro_pairs",
+        "recommendation_tier", "supporting_summary", "skeptic_rebuttal",
+        "final_recommendation", "action_plan", "risk_register"
+      ],
+      "properties": {
+        "governing_question": { "type": "string" },
+        "economic_objective": { "type": "string", "enum": ["GROWTH", "MARGIN", "CASH", "VALUATION"] },
+        "mece_decomposition": { "type": "array", "maxItems": 6, "minItems": 1 },
+        "mece_compliance_check": {
+          "type": "object",
+          "required": [
+            "no_category_overlap", "no_missing_economic_drivers",
+            "each_rec_linked_to_outcome", "language_is_executive_ready",
+            "governing_question_answered", "tiers_justified_by_evidence"
+          ]
+        },
+        "hypothesis_validation": { "type": "object" },
+        "micro_macro_pairs": { "type": "array", "minItems": 1 },
+        "recommendation_tier": {
+          "type": "string",
+          "enum": ["STRONG_BUILD", "BUILD_MVP", "RE_EVALUATE", "DEPRIORITIZE"]
+        },
+        "supporting_summary": { "type": "string" },
+        "skeptic_rebuttal": { "type": "string" },
+        "final_recommendation": { "type": "string" },
+        "action_plan": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["horizon", "description", "impact", "effort", "feasibility", "economic_outcome"]
+          },
+          "minItems": 1
+        },
+        "risk_register": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["risk", "likelihood", "impact", "control", "residual_risk"]
+          },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "ArbiterOutput": {
+      "type": "object",
+      "required": ["pass", "findings"],
+      "properties": {
+        "pass": { "type": "boolean" },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["severity", "responsible_agent", "description"],
+            "properties": {
+              "severity": { "type": "string", "enum": ["critical", "high", "low"] },
+              "responsible_agent": {
+                "type": "string",
+                "enum": ["curator", "researcher", "skeptic", "analyst", "report_builder"]
+              },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "JudgeOutput": {
+      "type": "object",
+      "required": ["judge", "pass", "critique", "findings"],
+      "properties": {
+        "judge": {
+          "type": "string",
+          "enum": ["url_integrity", "schema_compliance", "alignment"],
+          "description": "Identifier of the judge that produced this output."
+        },
+        "pass": { "type": "boolean" },
+        "critique": {
+          "type": "string",
+          "description": "Chain-of-Thought reasoning written before the verdict. Required even when pass=true."
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["severity", "responsible_agent", "description"],
+            "properties": {
+              "severity": { "type": "string", "enum": ["critical", "high", "low"] },
+              "responsible_agent": {
+                "type": "string",
+                "enum": ["curator", "researcher", "skeptic", "analyst", "report_builder"]
+              },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "ScenarioOutput": {
+      "type": "object",
+      "required": ["original_sample", "modified_sample", "injected_errors"],
+      "properties": {
+        "original_sample": { "type": "object" },
+        "modified_sample": { "type": "object" },
+        "injected_errors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["judge", "severity", "description"],
+            "properties": {
+              "judge": { "type": "string", "enum": ["url_integrity", "schema_compliance", "alignment"] },
+              "severity": { "type": "string", "enum": ["critical", "high", "low"] },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

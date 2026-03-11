@@ -1,0 +1,22 @@
+[2026-03-11 15:25:46,913] [arbiter.PRA-20260311T192546-ec01a222] DEBUG :: PROMPT >>
+SYSTEM: <base_rules>
+# Base Rules — Inherited by All Skills
+
+All agents in this pipeline inherit the following constraints. They MUST NOT be repeated inline in individual `SKILL.md` files.
+
+---
+
+## Citation Rules
+
+- Every factual claim MUST be attributed to a specific, deep-linked URL that appeared verbatim
+USER: <input>
+PIPELINE OUTPUT TO AUDIT:
+{
+  "researcher_output": {
+    "macro_trends": [
+      "AI-first search adoption grew 38% YoY through Q1 2026"
+    ],
+    "supporting_evidence": [
+      {
+        "claim": "Comparison tools reduce purchase decision time by an average of 34% in SaaS verticals.",
+    

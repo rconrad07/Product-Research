@@ -1,0 +1,135 @@
+{
+  "_meta": {
+    "expected_outcome": "pass",
+    "description": "A fully valid pipeline output. All judges must pass this sample."
+  },
+  "researcher_output": {
+    "macro_trends": [
+      "AI-first search adoption grew 38% YoY through Q1 2026 per Gartner",
+      "B2B SaaS comparison tools see 22% higher conversion rates vs. non-comparison alternatives"
+    ],
+    "supporting_evidence": [
+      {
+        "claim": "Comparison tools reduce purchase decision time by an average of 34% in SaaS verticals.",
+        "source_url": "https://www.gartner.com/en/articles/b2b-saas-comparison-tools-2026"
+      }
+    ],
+    "competitor_examples": [
+      {
+        "company": "G2",
+        "feature": "Side-by-side product comparison grid",
+        "outcome": "Attributed 18% of Q4 2025 enterprise conversions"
+      }
+    ],
+    "sources": [
+      {
+        "title": "2026 B2B SaaS Buying Trends: The Role of Comparison Tooling",
+        "url": "https://www.gartner.com/en/articles/b2b-saas-comparison-tools-2026",
+        "url_verbatim": "https://www.gartner.com/en/articles/b2b-saas-comparison-tools-2026",
+        "publication": "Gartner",
+        "date": "2026-01-15",
+        "quote": "Buyers who used structured comparison tools completed vendor selection 34% faster than those who did not."
+      }
+    ]
+  },
+  "skeptic_output": {
+    "refuting_evidence": [
+      {
+        "claim": "Comparison fatigue is a documented phenomenon; 62% of B2B buyers abandon selections when presented with more than 5 options.",
+        "source_url": "https://hbr.org/2025/11/the-paradox-of-choice-in-b2b-software-buying"
+      }
+    ],
+    "data_gaps": [
+      "No longitudinal data on retention impact of comparison features beyond 90 days."
+    ],
+    "risk_factors": [
+      {
+        "risk": "Cannibalization of premium tier upsells if comparison tool surfaces pricing delta too prominently.",
+        "likelihood": "Medium",
+        "impact": "High",
+        "control": "Gate comparison depth behind account tiers."
+      }
+    ],
+    "contrarian_macro_trends": [
+      "Vendor consolidation is reducing the pool of comparable alternatives in niche verticals."
+    ],
+    "sources": [
+      {
+        "title": "The Paradox of Choice in B2B Software Buying",
+        "url": "https://hbr.org/2025/11/the-paradox-of-choice-in-b2b-software-buying",
+        "url_verbatim": "https://hbr.org/2025/11/the-paradox-of-choice-in-b2b-software-buying",
+        "publication": "Harvard Business Review",
+        "date": "2025-11-08",
+        "quote": "62% of B2B buyers report decision paralysis when presented with more than five alternatives simultaneously."
+      }
+    ]
+  },
+  "analyst_output": {
+    "governing_question": "Should we add a comparison tool to accelerate B2B pipeline conversion?",
+    "economic_objective": "GROWTH",
+    "mece_decomposition": [
+      "Market Demand: Is there proven buyer pull for comparison tooling?",
+      "Competitive Parity: Are we at risk of losing deals without it?",
+      "Revenue Impact: What is the quantifiable upside?",
+      "Execution Risk: Can we build and ship it within 1 quarter?",
+      "Cannibalization Risk: Does it undercut premium upsell motions?"
+    ],
+    "mece_compliance_check": {
+      "no_category_overlap": true,
+      "no_missing_economic_drivers": true,
+      "each_rec_linked_to_outcome": true,
+      "language_is_executive_ready": true,
+      "governing_question_answered": true,
+      "tiers_justified_by_evidence": true
+    },
+    "hypothesis_validation": {
+      "verdict": "SUPPORTED",
+      "rationale": "Both macro trend data and competitive benchmarks confirm buyer preference for comparison tooling in 2025-2026."
+    },
+    "micro_macro_pairs": [
+      {
+        "macro": "AI-first search adoption creating expectation of instant comparison",
+        "micro": "Our current product page has no side-by-side feature; users exit to G2"
+      }
+    ],
+    "recommendation_tier": "BUILD_MVP",
+    "supporting_summary": "Market evidence is strong. Three of our top five enterprise churned accounts cited the absence of a comparison feature.",
+    "skeptic_rebuttal": "Comparison fatigue is real, but is mitigated by capping the comparison matrix to 3 products and gating depth by plan tier.",
+    "final_recommendation": "Proceed with an MVP comparison tool capped at 3 products. Gate advanced filters to Enterprise tier to protect upsell motion.",
+    "action_plan": [
+      {
+        "horizon": "Immediate",
+        "description": "Define feature scope and wireframes with product design.",
+        "impact": "High",
+        "effort": "Low",
+        "feasibility": "High",
+        "economic_outcome": "Faster pipeline closure; reduced churn risk"
+      },
+      {
+        "horizon": "Short-term",
+        "description": "Build and A/B test the comparison widget on top 10 product pages.",
+        "impact": "High",
+        "effort": "Medium",
+        "feasibility": "High",
+        "economic_outcome": "Target 15% uplift in free-to-paid conversion"
+      },
+      {
+        "horizon": "Medium-term",
+        "description": "Gate advanced filters behind Enterprise plan; monitor upsell motion.",
+        "impact": "Medium",
+        "effort": "Low",
+        "feasibility": "High",
+        "economic_outcome": "Protect ASP; reduce cannibalization of upsell"
+      }
+    ],
+    "risk_register": [
+      {
+        "risk": "Comparison tool cannibalizes premium upsell discoverability",
+        "likelihood": "Medium",
+        "impact": "High",
+        "control": "Gate feature depth by account tier",
+        "residual_risk": "Low"
+      }
+    ]
+  }
+}

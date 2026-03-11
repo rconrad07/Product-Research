@@ -9,7 +9,7 @@ An agentic system that ingests product discovery insights (Excel surveys, transc
 ## Architecture
 
 ```text
-Curate → [Researcher ‖ Skeptic] → Analyst → Report Builder → URL Validator
+Curate → [Researcher ‖ Skeptic] → Analyst → Arbiter → RALPH Loop → Report Builder → URL Validator
 ```
 
 | Module | Role | Temperature |
@@ -18,6 +18,8 @@ Curate → [Researcher ‖ Skeptic] → Analyst → Report Builder → URL Valid
 | **Researcher** | Seeks supporting macro trends & competitor wins (parallel) | 0.4 |
 | **Skeptic** | Challenges hypothesis with conflicting data & failures (parallel) | 0.7 |
 | **Analyst** | Synthesizes via Minto Pyramid, MECE, and Economic Drivers | 0.1 |
+| **Arbiter** | Automated Quality Gate (binary judges & schema check) | 0.0 |
+| **RALPH Loop** | Decision logic for targeted re-runs (max 1 retry) | - |
 | **Report Builder** | Generates a self-contained, interactive HTML report | 0.3 |
 | **URL Validator** | Performs post-generation deep-link verification & auto-fixes | 0.0 |
 
@@ -50,6 +52,18 @@ The report is saved to the `output/` directory. By default, it uses a unique nam
 
 To override the filename:
 `--output custom_report.html`
+
+### Quality & Benchmarking
+
+The orchestrator supports manual validation and automated calibration:
+
+```bash
+# Audit a single pipeline output (JSON) against Arbiter judges
+python -m src.main --validate logs/run_id_output.json
+
+# Run the full calibration suite against the Gold Standard dataset
+python -m src.main --benchmark
+```
 
 ### Programmatic
 
@@ -92,10 +106,15 @@ Best practices are documented in [`docs/url_validation_best_practices.md`](docs/
 pytest tests/ -v
 ```
 
-### Manual Evaluations
+### Arbiter & Calibration
 
-Historic quality evaluations and "Arbiter" reports are stored in:
-`Evals/Manual/`
+The system is calibrated against a **Gold Standard** dataset to ensure judge accuracy:
+
+- **Arbiter Reports**: Automated quality audits stored in `Evals/Manual/` and `Evals/Arbiter/`.
+- **Calibration**: Measures judge performance (TPR/TNR) using `src/scripts/run_calibration.py`.
+- **Scenario Generation**: Synthetic adversarial testing via `src/agents/scenario_generator.py`.
+
+Gold Standard samples are located in `Evals/Gold_Standard/`.
 
 ---
 
@@ -104,27 +123,39 @@ Historic quality evaluations and "Arbiter" reports are stored in:
 ```text
 Product-Research/
 ├── src/
+│   ├── agents/             # Agent Skill definitions & logic
+│   │   ├── analyst/        # Minto synthesis SKILL.md
+│   │   ├── arbiter/        # Quality gate & binary judges
+│   │   ├── curator/        # Ingestion logic
+│   │   ├── researcher/     # Supporting evidence
+│   │   ├── skeptic/        # Adversarial research
+│   │   ├── scenario_generator/ # Synthetic testing logic
+│   │   ├── schemas/        # Agent output contracts (JSON)
+│   │   └── base_rules.md   # Shared constraints (citations, etc.)
 │   ├── config/
 │   │   ├── settings.py     # Agent parameters, chunking limits
-│   │   └── prompts.py      # Minto/MECE scaffolds (no hardcoding elsewhere)
+│   │   └── prompts.py      # Minto/MECE scaffolds
 │   ├── scripts/
-│   │   ├── url_validator.py # Stage 5: Citation verification logic
+│   │   ├── url_validator.py       # Stage 7: Citation verification
+│   │   ├── run_calibration.py     # Benchmarking suite
 │   │   └── generate_final_report.py # Asset compilation
-│   ├── curator.py          # Stage 1: Input ingestion (.xlsx, .txt, .md, URL)
-│   ├── researcher.py       # Stage 2a: Supporting evidence (GroundCite 2.0)
+│   ├── analyst.py          # Stage 3: Board-ready synthesis
+│   ├── curator.py          # Stage 1: Input ingestion
+│   ├── researcher.py       # Stage 2a: Supporting evidence
 │   ├── skeptic.py          # Stage 2b: Adversarial research
-│   ├── analyst.py          # Stage 3: Board-ready synthesis (12-key schema)
-│   ├── report_builder.py   # Stage 4: Premium HTML generation
-│   ├── utils.py            # IDE runtime interface, JSON parsing, logging
-│   └── main.py             # Pipeline Orchestrator
+│   ├── report_builder.py   # Stage 6: Premium HTML generation
+│   ├── utils.py            # IDE runtime interface & client
+│   └── main.py             # Pipeline Orchestrator (RALPH + Arbiter)
+├── Evals/
+│   ├── Gold_Standard/      # Calibrated input/output pairs
+│   └── Manual/             # Human audit histories
 ├── tests/
 │   ├── test_curator.py
 │   └── test_analyst.py
-├── docs/                   # Engineering guidelines & best practices
-├── Evals/                  # Quality audit reports (Manual/Arbiter)
+├── docs/                   # Engineering guidelines
 ├── inputs/                 # Data drop zone
 ├── output/                 # Generated Reports
-├── logs/                   # Human-readable & JSONL trace logs
+├── logs/                   # Trace logs (human/machine-readable)
 └── requirements.txt
 ```
 
